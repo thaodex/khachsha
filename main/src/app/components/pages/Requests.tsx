@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useState } from "react";
 import {
-  Inbox, Plus, ArrowRight, Users2, Check, X, AlertTriangle, Clock, StickyNote, Swords, Trophy,
+  Inbox, Plus, ArrowRight, Users2, Check, X, AlertTriangle, Clock, StickyNote, Swords, Trophy, Shuffle, DoorOpen,
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -33,8 +33,12 @@ function fromNow(iso: string) {
 }
 
 export function Requests() {
-  const { bookings, customer, roomLabel, findConflict, approveBooking, rejectBooking } = useStore();
+  const {
+    bookings, rooms, customer, roomType, roomLabel,
+    findConflict, getAvailableRooms, approveBooking, rejectBooking, reassignBooking,
+  } = useStore();
   const [creating, setCreating] = useState(false);
+  const [reassigning, setReassigning] = useState<string | null>(null);
 
   const pending = useMemo(
     () => bookings.filter((b) => b.status === "pending"),
@@ -82,13 +86,19 @@ export function Requests() {
     rejectBooking(id);
     toast.success(`Đã từ chối yêu cầu ${code}.`);
   };
+  const doReassign = (id: string, newRoomId: string) => {
+    const res = reassignBooking(id, newRoomId);
+    if (!res.ok) return toast.error(res.message);
+    toast.success(res.message);
+    setReassigning(null);
+  };
 
   return (
     <div className="space-y-5">
       <PageHeader
         icon={Inbox}
         title="Yêu cầu đặt phòng"
-        description="Hàng đợi yêu cầu từ khách (website/OTA/điện thoại) chờ lễ tân duyệt. Duyệt để giữ phòng, từ chối nếu không đáp ứng."
+        description="Hàng đợi yêu cầu từ khách (website/OTA/điện thoại) chờ lễ tân duyệt. Ưu tiên khách gửi trước — với khách gửi sau, hãy đổi sang phòng cùng loại còn trống thay vì từ chối."
         actions={<Button size="sm" onClick={() => setCreating(true)}><Plus className="size-4" /> Tạo yêu cầu</Button>}
       />
 
@@ -102,6 +112,16 @@ export function Requests() {
             const color = avatarColor(b.customerId);
             const contested = competitors.length > 0;
             const isFirst = rank === 1;
+            const requestedRoom = rooms.find((r) => r.id === b.roomId);
+            // Gợi ý đổi phòng khi: bị tranh & gửi sau, hoặc phòng đã trùng lịch (không thể duyệt trực tiếp)
+            const canOfferReassign = (contested && !isFirst) || !!conflict;
+            const altRooms = requestedRoom
+              ? getAvailableRooms(b.checkIn, b.checkOut, b.guests).filter(
+                  (r) => r.typeId === requestedRoom.typeId && r.id !== b.roomId,
+                )
+              : [];
+            const rt = requestedRoom ? roomType(requestedRoom.typeId) : undefined;
+            const isPicking = reassigning === b.id;
             return (
               <Card key={b.id} className={`overflow-hidden ${contested && isFirst ? "ring-2 ring-emerald-400" : ""}`}>
                 <div className={`h-1 w-full ${contested ? "bg-rose-400" : "bg-amber-400"}`} />
@@ -128,7 +148,7 @@ export function Requests() {
                   {contested && (
                     <div className="flex items-start gap-2 text-sm rounded-lg bg-rose-50 text-rose-700 p-2.5">
                       <Swords className="size-4 shrink-0 mt-0.5" />
-                      <span>Có <b>{competitors.length}</b> yêu cầu khác cùng tranh phòng này trong khoảng ngày trùng nhau. Ưu tiên khách gửi trước — duyệt 1 yêu cầu sẽ tự động từ chối các yêu cầu còn lại.</span>
+                      <span>Có <b>{competitors.length}</b> yêu cầu khác cùng tranh phòng này trong khoảng ngày trùng nhau. Ưu tiên khách gửi trước — với khách gửi sau, hãy <b>đổi sang phòng cùng loại còn trống</b> thay vì từ chối.</span>
                     </div>
                   )}
 
@@ -158,15 +178,55 @@ export function Requests() {
 
                   {conflict && (
                     <div className="flex items-center gap-2 text-sm rounded-lg bg-rose-50 text-rose-700 p-2.5">
-                      <AlertTriangle className="size-4 shrink-0" /> Phòng đã bị đặt trùng lịch ({conflict.code}). Cần đổi phòng trước khi duyệt.
+                      <AlertTriangle className="size-4 shrink-0" /> Phòng đã bị đặt trùng lịch ({conflict.code}). Đổi sang phòng cùng loại còn trống để vẫn phục vụ được khách.
                     </div>
                   )}
 
-                  <div className="flex gap-2 pt-1">
-                    <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => approve(b.id)} disabled={!!conflict}>
+                  {isPicking && (
+                    <div className="rounded-lg border p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-medium inline-flex items-center gap-1.5">
+                          <Shuffle className="size-4" /> Đổi sang phòng cùng loại{rt ? ` · ${rt.name}` : ""}
+                        </div>
+                        <button className="text-muted-foreground hover:text-foreground" onClick={() => setReassigning(null)} aria-label="Đóng">
+                          <X className="size-4" />
+                        </button>
+                      </div>
+                      {altRooms.length === 0 ? (
+                        <div className="text-sm text-muted-foreground">
+                          Không còn phòng cùng loại nào trống trong khoảng ngày này. Đành phải từ chối yêu cầu.
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {altRooms.map((r) => (
+                            <button
+                              key={r.id}
+                              onClick={() => doReassign(b.id, r.id)}
+                              className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                            >
+                              <DoorOpen className="size-3.5" /> Phòng {r.number}
+                              <span className="text-muted-foreground text-xs">· tầng {r.floor}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button className="flex-1 min-w-[9rem] bg-emerald-600 hover:bg-emerald-700" onClick={() => approve(b.id)} disabled={!!conflict}>
                       <Check className="size-4" /> Duyệt & giữ phòng
                     </Button>
-                    <Button variant="outline" className="flex-1 text-rose-600 hover:text-rose-700" onClick={() => reject(b.id, b.code)}>
+                    {canOfferReassign && (
+                      <Button
+                        variant="outline"
+                        className="flex-1 min-w-[9rem] text-indigo-600 hover:text-indigo-700"
+                        onClick={() => setReassigning(isPicking ? null : b.id)}
+                      >
+                        <Shuffle className="size-4" /> Đổi phòng cùng loại
+                      </Button>
+                    )}
+                    <Button variant="outline" className="flex-1 min-w-[9rem] text-rose-600 hover:text-rose-700" onClick={() => reject(b.id, b.code)}>
                       <X className="size-4" /> Từ chối
                     </Button>
                   </div>
