@@ -257,6 +257,8 @@ interface StoreValue {
   createBookingSafe: (input: NewBookingInput) => Promise<{ ok: boolean; message: string; booking?: Booking }>;
   approveBooking: (id: string) => { ok: boolean; message: string };
   rejectBooking: (id: string, reason?: string) => void;
+  /** Đổi yêu cầu sang một phòng khác CÙNG LOẠI còn trống rồi duyệt luôn (thay cho việc từ chối đơn gửi sau). */
+  reassignBooking: (id: string, newRoomId: string) => { ok: boolean; message: string };
   updateBookingStatus: (id: string, status: Booking["status"], expectedVersion?: number) => { ok: boolean; message: string };
   cancelBooking: (id: string, reason: string) => { ok: boolean; message: string };
   markNoShow: (id: string) => void;
@@ -911,6 +913,59 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [pushAudit],
   );
 
+  const reassignBooking = useCallback<StoreValue["reassignBooking"]>(
+    (id, newRoomId) => {
+      const b = bookings.find((x) => x.id === id);
+      if (!b) return { ok: false, message: "Không tìm thấy yêu cầu." };
+      if (b.status !== "pending")
+        return { ok: false, message: "Chỉ có thể đổi phòng cho yêu cầu đang chờ duyệt." };
+      if (newRoomId === b.roomId)
+        return { ok: false, message: "Phòng mới trùng với phòng đang yêu cầu." };
+
+      const oldRoom = rooms.find((r) => r.id === b.roomId);
+      const newRoom = rooms.find((r) => r.id === newRoomId);
+      if (!newRoom) return { ok: false, message: "Không tìm thấy phòng cần chuyển sang." };
+      if (oldRoom && newRoom.typeId !== oldRoom.typeId)
+        return { ok: false, message: "Chỉ được đổi sang phòng CÙNG LOẠI với phòng khách yêu cầu." };
+      const rt = roomTypes.find((t) => t.id === newRoom.typeId);
+      if (rt && rt.capacity < b.guests)
+        return { ok: false, message: "Phòng mới không đủ sức chứa cho số khách." };
+
+      const conflict = findConflict(newRoomId, b.checkIn, b.checkOut, b.id);
+      if (conflict)
+        return { ok: false, message: `Phòng ${newRoom.number} đã bị đặt trùng lịch (${conflict.code}).` };
+
+      setBookings((prev) =>
+        prev.map((x) =>
+          x.id === id
+            ? {
+                ...x,
+                roomId: newRoomId,
+                status: "reserved",
+                reviewedAt: new Date().toISOString(),
+                note: [x.note, `Lễ tân đổi từ phòng ${oldRoom?.number ?? b.roomId} sang ${newRoom.number} (cùng loại) do trùng lịch.`]
+                  .filter(Boolean)
+                  .join(" · "),
+                version: nextVersion(x.version),
+              }
+            : x,
+        ),
+      );
+      pushAudit("Đổi phòng & duyệt yêu cầu", b.code, `${oldRoom?.number ?? b.roomId} → ${newRoom.number}`);
+
+      const cust = customers.find((c) => c.id === b.customerId);
+      if (cust && (cust.email || cust.phone)) {
+        setTimeout(
+          () => toast.success(`Đã gửi email thông báo đổi sang phòng ${newRoom.number} tới ${cust.email || cust.phone}`),
+          500,
+        );
+      }
+
+      return { ok: true, message: `Đã đổi ${b.code} sang phòng ${newRoom.number} cùng loại và duyệt.` };
+    },
+    [bookings, rooms, roomTypes, findConflict, pushAudit, customers],
+  );
+
   const updateBookingStatus = useCallback<StoreValue["updateBookingStatus"]>(
     (id, status, expectedVersion) => {
       const b = bookings.find((x) => x.id === id);
@@ -1456,7 +1511,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       saveRoom, deleteRoom, saveRoomType, saveService, deleteService, saveCustomer,
 
       findConflict, getAvailableRooms, createBooking, createBookingSafe,
-      approveBooking, rejectBooking, updateBookingStatus, cancelBooking, markNoShow,
+      approveBooking, rejectBooking, reassignBooking, updateBookingStatus, cancelBooking, markNoShow,
       checkInWithDocument, addServiceToBooking, removeServiceFromBooking,
 
       holdRoom, dropHold, dropMyHolds, myActiveHolds, blockedRoomIds,
@@ -1481,7 +1536,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ratePlans, priceOverrides, localEvents, channels, auditLog, sessionId,
       login, logout, registerGuest, can, updateProfile, saveRoom, deleteRoom, saveRoomType, saveService, deleteService, saveCustomer,
       findConflict, getAvailableRooms, createBooking, createBookingSafe, approveBooking,
-      rejectBooking, updateBookingStatus, cancelBooking, markNoShow, checkInWithDocument,
+      rejectBooking, reassignBooking, updateBookingStatus, cancelBooking, markNoShow, checkInWithDocument,
       addServiceToBooking, removeServiceFromBooking, holdRoom, dropHold, dropMyHolds,
       myActiveHolds, blockedRoomIds, quoteFor, activeRatePlan, saveRatePlan, setActiveRatePlan,
       addPriceOverride, removePriceOverride, saveLocalEvent, deleteLocalEvent,
