@@ -23,10 +23,18 @@ export default function HeroAtmosphere({ night, onUnavailable }: { night: boolea
       float foreground=1.-smoothstep(.02,.48,uv.y);
       uv+=pointer*(.003+foreground*.004);
       float pool=(1.-smoothstep(.26,.38,uv.y))*smoothstep(.12,.3,uv.x)*(1.-smoothstep(.8,.96,uv.x));
-      float wave=sin(uv.y*170.+time*.8)*sin(uv.x*28.+time*.4);
-      uv.x+=wave*.0007*pool;uv.y+=sin(uv.x*55.+time*.55)*.0004*pool;
+      // Two-octave ripple: less mechanical, more like real water.
+      float w1=sin(uv.y*170.+time*.8)*sin(uv.x*28.+time*.4);
+      float w2=sin(uv.y*95.-time*.6)*sin(uv.x*47.+time*.5);
+      float wave=w1*.7+w2*.3;
+      uv.x+=wave*.0008*pool;uv.y+=(sin(uv.x*55.+time*.55)*.0004+w2*.0003)*pool;
       vec3 c=mix(texture2D(day,uv).rgb,texture2D(night,uv).rgb,blend);
-      c+=vec3(.7,.53,.27)*pow(max(0.,wave),8.)*pool*.025;
+      // Caustics — a shimmering bright net across the water surface.
+      float ca=pow(max(0.,sin(uv.x*120.+time*1.1)+sin(uv.y*150.-time*.9)),3.0);
+      c+=vec3(.55,.7,.75)*ca*pool*.05;
+      // Sun / moon glint that recolours between day and night.
+      float glint=pow(max(0.,wave),9.);
+      c+=mix(vec3(.85,.66,.34),vec3(.6,.72,.95),blend)*glint*pool*.045;
       gl_FragColor=vec4(c,1.);
     }`;
     try {
