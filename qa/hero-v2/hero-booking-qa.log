@@ -1,0 +1,6 @@
+hold banner persists 1
+booking 3D canvas 1
+deposit default disabled true
+booking persisted { bookings: 8, lastBooking: 'pending', holds: 1 }
+errors []
+fallback returned to photo true

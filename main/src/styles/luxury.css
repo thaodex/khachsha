@@ -1,0 +1,1291 @@
+/* =============================================================================
+   SAO MAI — LUXURY DESIGN SYSTEM (trang khách / public site)
+   Tham chiếu: Aman, Rosewood, Six Senses, Bulgari, Atlantis The Royal,
+   Capella, One&Only — điểm chung: ảnh full-bleed, chữ serif thanh mảnh,
+   bảng màu trung tính ấm + ánh kim, khoảng trắng rộng, chuyển động chậm rãi,
+   thanh đặt phòng luôn trong tầm tay.
+
+   Toàn bộ giao diện khách dùng class ".lux-*" (CSS thuần) nên:
+   - Không phụ thuộc cấu hình Tailwind → dễ tái sử dụng, dễ QA
+   - Prototype tĩnh và app React dùng CHUNG một file → nhìn giống hệt nhau
+   ========================================================================== */
+
+/* ----------------------------------------------------------------- Tokens */
+:root {
+  /* Màu nền tảng */
+  --lux-onyx: #0f0d0b;          /* nền tối sang trọng */
+  --lux-onyx-soft: #1a1714;
+  --lux-ink: #1c1917;           /* chữ chính */
+  --lux-ink-soft: #3a3531;
+  --lux-stone: #6e675e;         /* chữ phụ (AA trên nền sáng) */
+  --lux-line: #e3ddd2;          /* đường kẻ mảnh */
+  --lux-line-strong: #cfc7b8;
+  --lux-ivory: #fcfaf7;         /* nền trang */
+  --lux-sand: #f4efe7;          /* nền khối phụ */
+  --lux-white: #ffffff;
+
+  /* Ánh kim */
+  --lux-champagne: #c2a265;     /* accent trên nền tối */
+  --lux-gold-deep: #8a6d33;     /* accent trên nền sáng (đạt AA) */
+
+  /* Trạng thái */
+  --lux-success: #4b7a5a;
+  --lux-success-soft: #edf3ee;
+  --lux-danger: #a2453c;
+  --lux-danger-soft: #faeceb;
+
+  /* Đổ bóng — luôn nhẹ, ưu tiên viền mảnh */
+  --lux-shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05), 0 4px 12px rgba(28, 25, 23, 0.04);
+  --lux-shadow-md: 0 12px 32px -18px rgba(15, 13, 11, 0.28);
+  --lux-shadow-lg: 0 28px 64px -28px rgba(15, 13, 11, 0.38);
+
+  /* Chữ */
+  --lux-font-display: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
+  --lux-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Nhịp bố cục */
+  --lux-max: 1200px;
+  --lux-gutter: 24px;
+  --lux-radius: 2px;            /* gần vuông = cảm giác cao cấp */
+  --lux-radius-md: 4px;
+  --lux-header-h: 84px;
+  --lux-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --------------------------------------------------------------- Nền tảng */
+.lux {
+  font-family: var(--lux-font-sans);
+  color: var(--lux-ink);
+  background: var(--lux-ivory);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.lux ::selection {
+  background: var(--lux-champagne);
+  color: var(--lux-onyx);
+}
+
+.lux :focus-visible {
+  outline: 2px solid var(--lux-gold-deep);
+  outline-offset: 3px;
+  border-radius: var(--lux-radius);
+}
+
+.lux img {
+  display: block;
+  max-width: 100%;
+}
+
+.lux-shell {
+  width: 100%;
+  max-width: var(--lux-max);
+  margin-inline: auto;
+  padding-inline: var(--lux-gutter);
+}
+
+.lux-shell--wide { max-width: 1360px; }
+.lux-shell--narrow { max-width: 760px; }
+
+/* ------------------------------------------------------------- Typography */
+.lux-display {
+  font-family: var(--lux-font-display);
+  font-weight: 300;
+  font-size: clamp(2.6rem, 5.4vw, 4.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.lux-title {
+  font-family: var(--lux-font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.lux-subtitle {
+  font-family: var(--lux-font-display);
+  font-weight: 400;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.lux-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.6875rem;         /* 11px — chỉ dùng cho nhãn ngắn in hoa */
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--lux-gold-deep);
+  margin: 0;
+}
+
+.lux-eyebrow--light { color: var(--lux-champagne); }
+
+.lux-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.lux-eyebrow--center::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.lux-lede {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--lux-stone);
+  max-width: 62ch;
+  margin: 0;
+}
+
+.lux-lede--light { color: rgba(255, 255, 255, 0.75); }
+
+.lux-muted { color: var(--lux-stone); }
+.lux-gold { color: var(--lux-gold-deep); }
+
+.lux-rule {
+  width: 56px;
+  height: 1px;
+  background: var(--lux-champagne);
+  border: 0;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- Buttons */
+.lux-btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--lux-ink);
+  --btn-bd: var(--lux-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 30px;
+  border: 1px solid var(--btn-bd);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-radius: var(--lux-radius);
+  font-family: var(--lux-font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.35s var(--lux-ease), color 0.35s var(--lux-ease),
+    border-color 0.35s var(--lux-ease), transform 0.35s var(--lux-ease);
+}
+
+.lux-btn:hover { transform: translateY(-1px); }
+.lux-btn:active { transform: translateY(0); }
+
+.lux-btn[disabled],
+.lux-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lux-btn--gold {
+  --btn-bg: var(--lux-champagne);
+  --btn-fg: var(--lux-onyx);
+  --btn-bd: var(--lux-champagne);
+}
+.lux-btn--gold:hover:not([disabled]) {
+  --btn-bg: #d4b87f;
+  --btn-bd: #d4b87f;
+}
+
+.lux-btn--ink {
+  --btn-bg: var(--lux-ink);
+  --btn-fg: #fff;
+  --btn-bd: var(--lux-ink);
+}
+.lux-btn--ink:hover:not([disabled]) {
+  --btn-bg: var(--lux-onyx);
+}
+
+.lux-btn--outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--lux-ink);
+  --btn-bd: var(--lux-line-strong);
+}
+.lux-btn--outline:hover:not([disabled]) {
+  --btn-bd: var(--lux-ink);
+}
+
+.lux-btn--light {
+  --btn-bg: transparent;
+  --btn-fg: #fff;
+  --btn-bd: rgba(255, 255, 255, 0.55);
+}
+.lux-btn--light:hover:not([disabled]) {
+  --btn-bg: #fff;
+  --btn-fg: var(--lux-onyx);
+  --btn-bd: #fff;
+}
+
+.lux-btn--sm { min-height: 40px; padding: 0 20px; font-size: 0.6875rem; }
+.lux-btn--block { width: 100%; }
+
+.lux-btn__icon { width: 16px; height: 16px; flex: none; }
+
+/* Liên kết có gạch chân chạy từ trái sang */
+.lux-linkline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+  color: inherit;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lux-linkline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+  transform-origin: left;
+  transform: scaleX(1);
+  transition: opacity 0.3s var(--lux-ease);
+}
+
+.lux-linkline:hover::after { opacity: 1; }
+
+/* ----------------------------------------------------------------- Header */
+.lux-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  transition: background-color 0.45s var(--lux-ease), box-shadow 0.45s var(--lux-ease),
+    border-color 0.45s var(--lux-ease);
+  border-bottom: 1px solid transparent;
+}
+
+.lux-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: var(--lux-header-h);
+  transition: height 0.45s var(--lux-ease);
+}
+
+.lux-header--solid {
+  background: rgba(252, 250, 247, 0.94);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--lux-line);
+  box-shadow: var(--lux-shadow-sm);
+}
+
+.lux-header--solid .lux-header__inner { height: 68px; }
+
+.lux-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+
+.lux-brand__mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--lux-font-display);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
+.lux-brand__name {
+  font-family: var(--lux-font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.lux-brand__tag {
+  font-size: 0.625rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  opacity: 0.66;
+}
+
+.lux-nav {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  margin-inline: auto;
+}
+
+.lux-nav__link {
+  position: relative;
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.3s var(--lux-ease);
+}
+
+.lux-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--lux-champagne);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s var(--lux-ease);
+}
+
+.lux-nav__link:hover { opacity: 1; }
+.lux-nav__link:hover::after,
+.lux-nav__link[aria-current="page"]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.lux-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lux-header--onLight { color: var(--lux-ink); }
+.lux-header--onDark { color: #fff; }
+.lux-header--onDark .lux-btn--outline { --btn-fg: #fff; --btn-bd: rgba(255,255,255,.5); }
+.lux-header--onDark .lux-btn--outline:hover { --btn-bg: #fff; --btn-fg: var(--lux-onyx); }
+
+.lux-burger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: var(--lux-radius);
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Menu tràn màn hình cho mobile */
+.lux-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  background: var(--lux-onyx);
+  color: #fff;
+  padding: 24px var(--lux-gutter) 40px;
+}
+
+.lux-menu__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 60px;
+}
+
+.lux-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 32px;
+  list-style: none;
+  padding: 0;
+}
+
+.lux-menu__link {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: none;
+  color: #fff;
+  font-family: var(--lux-font-display);
+  font-size: 1.6rem;
+  font-weight: 300;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lux-menu__foot { margin-top: auto; display: grid; gap: 12px; }
+
+/* ------------------------------------------------------------------- Hero */
+.lux-hero {
+  position: relative;
+  min-height: min(100svh, 940px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--lux-onyx);
+  color: #fff;
+  isolation: isolate;
+}
+
+.lux-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.lux-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: lux-kenburns 26s ease-in-out infinite alternate;
+}
+
+@keyframes lux-kenburns {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); }
+}
+
+.lux-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(15, 13, 11, 0.62) 0%, rgba(15, 13, 11, 0.12) 34%, rgba(15, 13, 11, 0.78) 100%),
+    radial-gradient(120% 80% at 20% 90%, rgba(15, 13, 11, 0.55), transparent 60%);
+}
+
+.lux-hero__content {
+  width: 100%;
+  padding-top: calc(var(--lux-header-h) + 72px);
+  padding-bottom: 132px;
+}
+
+.lux-hero__title {
+  margin-top: 22px;
+  max-width: 15ch;
+  color: #fff;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+}
+
+.lux-hero__title em {
+  font-style: italic;
+  color: var(--lux-champagne);
+}
+
+.lux-hero__lede {
+  margin-top: 22px;
+  max-width: 48ch;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.lux-hero__actions {
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.lux-hero__meta {
+  margin-top: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  max-width: 720px;
+}
+
+.lux-hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lux-hero__stat b {
+  font-family: var(--lux-font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1;
+  color: #fff;
+}
+
+.lux-hero__stat span {
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.lux-scrollcue {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.625rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lux-scrollcue i {
+  display: block;
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent);
+  animation: lux-cue 2.4s ease-in-out infinite;
+}
+
+@keyframes lux-cue {
+  0%, 100% { opacity: 0.25; transform: scaleY(0.6); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+}
+
+/* ---------------------------------------------------- Thanh đặt phòng nổi */
+.lux-bookbar-wrap {
+  position: relative;
+  z-index: 40;
+  margin-top: -56px;
+}
+
+.lux-bookbar {
+  background: var(--lux-white);
+  border: 1px solid var(--lux-line);
+  border-radius: var(--lux-radius-md);
+  box-shadow: var(--lux-shadow-lg);
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 8px 0;
+}
+
+.lux-bookbar__field { padding: 4px 20px; border-left: 1px solid var(--lux-line); }
+.lux-bookbar__field:first-child { border-left: 0; padding-left: 6px; }
+.lux-bookbar__cta { padding-left: 20px; }
+
+.lux-field__label {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lux-stone);
+  margin-bottom: 6px;
+}
+
+.lux-field__control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--lux-font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--lux-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.lux-field__control svg { color: var(--lux-gold-deep); flex: none; }
+.lux-field__hint { font-size: 0.75rem; color: var(--lux-stone); }
+
+.lux-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lux-stepper button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--lux-line);
+  background: var(--lux-white);
+  border-radius: 50%;
+  color: var(--lux-ink);
+  cursor: pointer;
+  transition: border-color 0.3s var(--lux-ease), background-color 0.3s var(--lux-ease);
+}
+
+.lux-stepper button:hover:not([disabled]) { border-color: var(--lux-ink); background: var(--lux-sand); }
+.lux-stepper button[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.lux-stepper output {
+  min-width: 46px;
+  text-align: center;
+  font-family: var(--lux-font-display);
+  font-size: 1.25rem;
+}
+
+/* Thanh đặt phòng dính mép trên khi cuộn qua hero */
+.lux-bookbar--docked {
+  position: fixed;
+  top: 68px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  box-shadow: var(--lux-shadow-md);
+  padding: 10px max(var(--lux-gutter), calc((100vw - var(--lux-max)) / 2 + var(--lux-gutter)));
+  animation: lux-dock-in 0.4s var(--lux-ease);
+}
+
+.lux-bookbar--docked .lux-field__control { font-size: 1.05rem; min-height: 34px; }
+.lux-bookbar--docked .lux-field__label { margin-bottom: 2px; }
+
+@keyframes lux-dock-in {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ---------------------------------------------------------------- Section */
+.lux-section { padding: clamp(64px, 8vw, 120px) 0; }
+.lux-section--tight { padding: clamp(48px, 6vw, 84px) 0; }
+.lux-section--sand { background: var(--lux-sand); }
+.lux-section--dark { background: var(--lux-onyx); color: #fff; }
+
+.lux-section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 720px;
+}
+
+.lux-section__head--center {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.lux-section__bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+/* ------------------------------------------------------------- Room cards */
+.lux-rooms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.lux-room {
+  display: flex;
+  flex-direction: column;
+  background: var(--lux-white);
+  border: 1px solid var(--lux-line);
+  border-radius: var(--lux-radius-md);
+  overflow: hidden;
+  transition: box-shadow 0.5s var(--lux-ease), transform 0.5s var(--lux-ease),
+    border-color 0.5s var(--lux-ease);
+}
+
+.lux-room:hover {
+  box-shadow: var(--lux-shadow-lg);
+  border-color: var(--lux-line-strong);
+  transform: translateY(-4px);
+}
+
+.lux-room__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--lux-sand);
+}
+
+.lux-room__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--lux-ease);
+}
+
+.lux-room:hover .lux-room__media img { transform: scale(1.06); }
+
+.lux-flag {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(252, 250, 247, 0.94);
+  color: var(--lux-ink);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+.lux-flag i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lux-success);
+  flex: none;
+}
+
+.lux-flag--out { background: rgba(162, 69, 60, 0.92); color: #fff; }
+.lux-flag--out i { background: #fff; }
+
+.lux-room__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  padding: 26px 24px 24px;
+}
+
+.lux-room__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lux-room__name {
+  font-family: var(--lux-font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.lux-room__cap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--lux-stone);
+}
+
+.lux-price { text-align: right; flex: none; }
+
+.lux-price__label {
+  display: block;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lux-stone);
+}
+
+.lux-price__value {
+  font-family: var(--lux-font-display);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--lux-ink);
+  white-space: nowrap;
+}
+
+.lux-price__unit { font-size: 0.75rem; color: var(--lux-stone); }
+
+.lux-room__desc {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--lux-stone);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lux-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.lux-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--lux-line);
+  border-radius: 999px;
+  background: var(--lux-ivory);
+  font-size: 0.75rem;
+  color: var(--lux-ink-soft);
+  white-space: nowrap;
+}
+
+.lux-chip svg { color: var(--lux-gold-deep); }
+
+.lux-room__foot {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--lux-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.lux-room__total { font-size: 0.8125rem; color: var(--lux-stone); line-height: 1.4; }
+.lux-room__total b { display: block; color: var(--lux-ink); font-weight: 600; font-size: 0.9375rem; }
+
+/* ------------------------------------------------------ Trải nghiệm (split) */
+.lux-split {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.lux-split--reverse .lux-split__media { order: 2; }
+
+.lux-split__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lux-radius-md);
+  aspect-ratio: 4 / 3;
+  background: var(--lux-sand);
+}
+
+.lux-split__media img { width: 100%; height: 100%; object-fit: cover; }
+
+.lux-split__media--tall { aspect-ratio: 4 / 5; }
+
+.lux-split__body { display: flex; flex-direction: column; gap: 20px; }
+
+.lux-featlist {
+  display: grid;
+  gap: 14px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lux-featlist li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 0.9375rem;
+  color: var(--lux-ink-soft);
+  line-height: 1.6;
+}
+
+.lux-featlist svg { margin-top: 3px; color: var(--lux-gold-deep); }
+
+/* ------------------------------------------------------------- Tiện nghi */
+.lux-amenities {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--lux-line);
+  border: 1px solid var(--lux-line);
+  border-radius: var(--lux-radius-md);
+  overflow: hidden;
+}
+
+.lux-amenity {
+  background: var(--lux-ivory);
+  padding: 34px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background-color 0.4s var(--lux-ease);
+}
+
+.lux-amenity:hover { background: var(--lux-white); }
+.lux-amenity__icon { color: var(--lux-gold-deep); }
+
+.lux-amenity__title {
+  font-family: var(--lux-font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.lux-amenity__desc { font-size: 0.875rem; color: var(--lux-stone); margin: 0; line-height: 1.65; }
+
+/* -------------------------------------------------------------- Dải số ấn */
+.lux-band {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  text-align: center;
+}
+
+.lux-band__item { display: flex; flex-direction: column; gap: 8px; }
+
+.lux-band__value {
+  font-family: var(--lux-font-display);
+  font-size: clamp(2.2rem, 3.6vw, 3rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--lux-champagne);
+}
+
+.lux-band__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+/* ---------------------------------------------------------------- Reviews */
+.lux-quotes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.lux-quote {
+  background: var(--lux-white);
+  border: 1px solid var(--lux-line);
+  border-radius: var(--lux-radius-md);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lux-stars { display: flex; gap: 3px; color: var(--lux-champagne); }
+
+.lux-quote__text {
+  font-family: var(--lux-font-display);
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: var(--lux-ink);
+  margin: 0;
+}
+
+.lux-quote__meta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.lux-avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--lux-sand);
+  color: var(--lux-gold-deep);
+  font-family: var(--lux-font-display);
+  font-size: 1rem;
+  flex: none;
+}
+
+.lux-quote__name { font-size: 0.9375rem; font-weight: 600; line-height: 1.3; }
+.lux-quote__role { font-size: 0.75rem; color: var(--lux-stone); }
+
+/* -------------------------------------------------------------- CTA cuối */
+.lux-cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lux-radius-md);
+  color: #fff;
+  isolation: isolate;
+  min-height: 380px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: clamp(48px, 7vw, 88px) 24px;
+}
+
+.lux-cta img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lux-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(15, 13, 11, 0.55), rgba(15, 13, 11, 0.78));
+}
+
+.lux-cta__inner { display: flex; flex-direction: column; align-items: center; gap: 20px; max-width: 640px; }
+
+/* ----------------------------------------------------------------- Footer */
+.lux-footer { background: var(--lux-onyx); color: rgba(255, 255, 255, 0.72); }
+
+.lux-footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 40px;
+  padding: clamp(56px, 7vw, 88px) 0 48px;
+}
+
+.lux-footer h4 {
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+.lux-footer__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-size: 0.9375rem; }
+
+.lux-footer__list button,
+.lux-footer__list a {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s var(--lux-ease);
+}
+
+.lux-footer__list button:hover,
+.lux-footer__list a:hover { color: var(--lux-champagne); }
+
+.lux-footer__row { display: flex; align-items: flex-start; gap: 10px; }
+.lux-footer__row svg { margin-top: 3px; color: var(--lux-champagne); flex: none; }
+
+.lux-newsletter { display: flex; gap: 0; margin-top: 16px; }
+
+.lux-newsletter input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-right: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  border-radius: var(--lux-radius) 0 0 var(--lux-radius);
+}
+
+.lux-newsletter input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+.lux-newsletter button {
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--lux-champagne);
+  background: var(--lux-champagne);
+  color: var(--lux-onyx);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-radius: 0 var(--lux-radius) var(--lux-radius) 0;
+  cursor: pointer;
+}
+
+.lux-footer__bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 22px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 0.8125rem;
+}
+
+.lux-footer__legal { display: flex; flex-wrap: wrap; gap: 20px; }
+
+/* --------------------------------------------------------------- Reveal */
+.lux-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.9s var(--lux-ease), transform 0.9s var(--lux-ease);
+}
+
+.lux-reveal.is-in { opacity: 1; transform: none; }
+.lux-reveal--d1 { transition-delay: 0.08s; }
+.lux-reveal--d2 { transition-delay: 0.16s; }
+.lux-reveal--d3 { transition-delay: 0.24s; }
+
+/* --------------------------------------------------------------- Skeleton */
+.lux-skeleton {
+  background: linear-gradient(90deg, var(--lux-sand) 25%, #ece5da 37%, var(--lux-sand) 63%);
+  background-size: 400% 100%;
+  animation: lux-shimmer 1.4s ease infinite;
+  border-radius: var(--lux-radius);
+}
+
+@keyframes lux-shimmer {
+  from { background-position: 100% 50%; }
+  to { background-position: 0 50%; }
+}
+
+/* Chỉ hiện cho trình đọc màn hình */
+.lux-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lux-skip {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--lux-onyx);
+  color: #fff;
+  border-radius: var(--lux-radius);
+  transition: top 0.25s var(--lux-ease);
+}
+
+.lux-skip:focus { top: 16px; }
+
+/* ------------------------------------------------------------ Responsive */
+@media (max-width: 1080px) {
+  .lux-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lux-amenities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lux-quotes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lux-footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lux-band { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 24px; }
+}
+
+@media (max-width: 900px) {
+  :root { --lux-header-h: 68px; }
+  .lux-nav { display: none; }
+  .lux-burger { display: inline-flex; }
+  .lux-header__actions .lux-btn--hideSm { display: none; }
+  .lux-brand__tag { display: none; }
+
+  .lux-bookbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 0;
+    padding: 16px;
+  }
+  .lux-bookbar__field { border-left: 0; padding: 10px 8px; }
+  .lux-bookbar__field + .lux-bookbar__field { border-top: 0; }
+  .lux-bookbar__field:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--lux-line); }
+  .lux-bookbar__cta { grid-column: 1 / -1; padding: 12px 8px 4px; }
+  .lux-bookbar--docked { position: static; animation: none; padding: 16px; }
+
+  .lux-split { grid-template-columns: 1fr; }
+  .lux-split--reverse .lux-split__media { order: 0; }
+  .lux-hero__content { padding-bottom: 96px; }
+  .lux-hero__meta { gap: 22px; }
+}
+
+@media (max-width: 640px) {
+  :root { --lux-gutter: 18px; }
+  .lux-rooms,
+  .lux-quotes,
+  .lux-amenities,
+  .lux-footer__grid { grid-template-columns: 1fr; }
+  .lux-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lux-hero { min-height: 92svh; }
+  .lux-hero__stat b { font-size: 1.35rem; }
+  .lux-room__foot { flex-direction: column; align-items: stretch; }
+  .lux-room__foot .lux-btn { width: 100%; }
+  .lux-btn { width: auto; }
+  .lux-hero__actions .lux-btn { flex: 1 1 auto; }
+  .lux-footer__bottom { justify-content: flex-start; }
+}
+
+/* ------------------------------------------------- Tôn trọng reduce-motion */
+@media (prefers-reduced-motion: reduce) {
+  .lux *,
+  .lux *::before,
+  .lux *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .lux-reveal { opacity: 1 !important; transform: none !important; }
+  .lux-hero__media img { animation: none !important; }
+}
+
+/* ---------------------------------------------- Tinh chỉnh sau QA mobile */
+@media (max-width: 640px) {
+  .lux-brand__name { font-size: 1.05rem; letter-spacing: 0.12em; white-space: nowrap; }
+  .lux-brand__mark { width: 34px; height: 34px; font-size: 0.85rem; }
+  .lux-header__actions { gap: 8px; }
+
+  .lux-field__control { font-size: 1rem; gap: 8px; }
+  .lux-stepper output { font-size: 1.05rem; min-width: 62px; }
+
+  .lux-room__head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .lux-price { text-align: left; }
+  .lux-price__label { display: inline; margin-right: 6px; }
+  .lux-price__value { font-size: 1.4rem; }
+
+  .lux-quote__text { font-size: 1.15rem; }
+  .lux-amenity { padding: 26px 22px; }
+}

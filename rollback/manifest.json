@@ -1,0 +1,262 @@
+[
+  {
+    "path": ".env.example",
+    "enhanced_sha256": "3960686b694eec20a27cb3c82dd7600f4a2dea5e06fbbbfcbc813ba45f20ce22",
+    "existed": false
+  },
+  {
+    "path": ".gitignore",
+    "enhanced_sha256": "a459038af144bb649dd32c98f20e160838ec500ed5580fb1669ed0860196e140",
+    "existed": false
+  },
+  {
+    "path": "docs/CINEMATIC-HERO-V2.md",
+    "enhanced_sha256": "4a6274f6f03eda0fe0fb20993293b98a18825d3d4fd9ff22e2aca72fbb3557d2",
+    "existed": false
+  },
+  {
+    "path": "docs/ENHANCEMENT-REPORT.md",
+    "enhanced_sha256": "b0c83ef451ec1c6a001716f6dc01fffe4685a5c18e8da601df37fb3abc7e9534",
+    "existed": false
+  },
+  {
+    "path": "index.html",
+    "enhanced_sha256": "07ddae8029cd34bf710f96794e538d9067662cf987f77b64be92650404c5f16b",
+    "existed": true
+  },
+  {
+    "path": "public/media/dining.webp",
+    "enhanced_sha256": "fb81780bff8c36226a6313daf9a2b17893b991bcd2695ab47a6820be324050cc",
+    "existed": false
+  },
+  {
+    "path": "public/media/hero-night-mobile.webp",
+    "enhanced_sha256": "019e750de9f17e6c94c78e0136f3f0d84c64fa5386feb205c53f6aa837afb359",
+    "existed": false
+  },
+  {
+    "path": "public/media/hero-night.webp",
+    "enhanced_sha256": "afa34a37971aa10528b34a5cff1cdc67f9067b02d8e7fc813dc4ab46de8c09f6",
+    "existed": false
+  },
+  {
+    "path": "public/media/hero-resort.webp",
+    "enhanced_sha256": "67af5e39cc2c1ac6d1d863667bbbfca0035accd03a7eb2057bc72801d14197c8",
+    "existed": false
+  },
+  {
+    "path": "public/media/hero-sunset-mobile.webp",
+    "enhanced_sha256": "d880962309405cfb6fe6c2a9d22c7a8957e21a0a5d7c597f76503ec3890390a4",
+    "existed": false
+  },
+  {
+    "path": "public/media/hero-sunset.webp",
+    "enhanced_sha256": "e2b444428addbdac66539d195cd3b7348761a86632624306aa9e4db568986a36",
+    "existed": false
+  },
+  {
+    "path": "public/media/pool.webp",
+    "enhanced_sha256": "a2437aca17b47c8fad983586a0b56feedec03bb782b97d300261a7ce4f3ad0a9",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-deluxe.webp",
+    "enhanced_sha256": "461c0e515aad53d9ee94851aa83dd967f004fd58d0cc69106d7906b777f5f51d",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-family.webp",
+    "enhanced_sha256": "819ddadfca0c6a21b51411967146ece8a895bc6a5bc619bada1e14eaac8505ed",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-penthouse.webp",
+    "enhanced_sha256": "2f6b15e2899b52d0c00563de0cb629a06c15bc88d8e2bc33f507ff9bef3f41e2",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-presidential.webp",
+    "enhanced_sha256": "e5cc4b2de9053926ec8ed2c0e1d80571bdfa4650a25265572aea38904adcfdbe",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-suite.webp",
+    "enhanced_sha256": "37f1b46a7c67b4f73a81b3ab2111b36c9c510b3e5ea5a0d594af46068d49224d",
+    "existed": false
+  },
+  {
+    "path": "public/media/room-superior.webp",
+    "enhanced_sha256": "51bbcbb4f5bf776507acd5ae3c276b57c13142e769b34d13ef820b77effe341d",
+    "existed": false
+  },
+  {
+    "path": "src/__shims__.d.ts",
+    "enhanced_sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+    "existed": true
+  },
+  {
+    "path": "src/app/App.tsx",
+    "enhanced_sha256": "c927586117558123f1746243672f161149fffdc6f5cd2921843c81701a47a15b",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/Copilot.tsx",
+    "enhanced_sha256": "d712aa784cc8d571f9eb0d23629ab5e0e54acedbeb52a426d018e5ff65490278",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/HeroScene3D.tsx",
+    "enhanced_sha256": "e975957b2944a5564236c3ecfb0679d9456da2b7e38c7a0eab56201ab7610a5d",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/PublicSite.tsx",
+    "enhanced_sha256": "dfa209a2c3549ae2b47655f4f0ad9449a8c4ce41277694e23a2590dc2eb68ea9",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/figma/ImageWithFallback.tsx",
+    "enhanced_sha256": "3cb2066b0805a925c7825d9531773d6e907b6547fe8031fcc938762d367298ee",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/BookingBar.tsx",
+    "enhanced_sha256": "d847ea06809b3fdea529fa3b471cda31728a259b33a0e2bfd5283870dd25e5a9",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/BookingChat.tsx",
+    "enhanced_sha256": "007871a0ca0c5d4320a430bb23a288e5a4d4adfb8b1af13be55f36b429ecc670",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/BookingFlow.tsx",
+    "enhanced_sha256": "ab3b5d6da6f8934d0a2ecb09bbcd9db0996e409cfe672ba05ede832de04e55f7",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/DepositDialog.tsx",
+    "enhanced_sha256": "6275cb4f1a25ebf9c6687f6b71f1a2f69342d97facda283070221317e98ad857",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/GuestAuth.tsx",
+    "enhanced_sha256": "461471b3e603286c7ceb3c1c063e6f09eb28c9711c1e216dd90a0a3c82f0f54f",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/HeroAtmosphere.tsx",
+    "enhanced_sha256": "d453eb68eef7312f190af585ca50665c868db1151b7ce945aa953b28fc63e1ec",
+    "existed": false
+  },
+  {
+    "path": "src/app/components/guest/Home.tsx",
+    "enhanced_sha256": "33d2e0a747bd95c8b2f42f7a9fde26a964fb02907c49a19dadd775b2f2bb8514",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/LegacyLuxHero.tsx",
+    "enhanced_sha256": "6dbb5888f281f5143cadbfa65c92c9078a6d82a34455cad092d65ea46ae41631",
+    "existed": false
+  },
+  {
+    "path": "src/app/components/guest/LuxFooter.tsx",
+    "enhanced_sha256": "368338ec196f4fdf78ff93edce89f40f5fc960bd7c123fb60f68d4b92af59b12",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/LuxHero.tsx",
+    "enhanced_sha256": "e4ddbe820d1ffbb2f32d3f5a83ad9a7f0a7c5d7051824ad4ee7b0643f365fa42",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/guest/RoomPreview.tsx",
+    "enhanced_sha256": "fc1c13ed94a1ec1597a32942ef1adc01043e8d5e939b54587a03f2a5951b4e3b",
+    "existed": false
+  },
+  {
+    "path": "src/app/components/guest/RoomScene.tsx",
+    "enhanced_sha256": "53b5d1435e9f62eb1aad8ee3b814a6ae69e89ddc56c148e4035d24651d4e925a",
+    "existed": false
+  },
+  {
+    "path": "src/app/components/pages/Bookings.tsx",
+    "enhanced_sha256": "10b3995b1a22589d7c2abd79da5bb6605f0a178cafca02d208d0b9bd0a929038",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/pages/RevenueAI.tsx",
+    "enhanced_sha256": "6ad04fde365a6b54e274fb61ce922f004b08d98f98c18ee5c0bdbd5e2dd4dfc6",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/pages/RoomCalendar.tsx",
+    "enhanced_sha256": "73352dd8acb13651f1f7aa4deb454a6f9e5ffbb1e169e9c8a61d66bcbdd70939",
+    "existed": true
+  },
+  {
+    "path": "src/app/components/ui/sonner.tsx",
+    "enhanced_sha256": "3ec20259fbfe33a802d77a3cd7f0b74929f86b49cc4a16599c92143606241f87",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/__tests__/enhancements.test.ts",
+    "enhanced_sha256": "3c8c9dd7dfd5bdf8337f91f204a0b52677cf449a9cc93739eebb1086fc3665d5",
+    "existed": false
+  },
+  {
+    "path": "src/app/lib/format.ts",
+    "enhanced_sha256": "c74b32d4408e98a142b329d8dbc924ca6cd40d18cde7905fd9083c172901eee3",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/holds.ts",
+    "enhanced_sha256": "322f29e7a789cce32d973bdad6b45d8ede4e81f378a9057566a3b73237d56500",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/payments.ts",
+    "enhanced_sha256": "ac4cc889461ac4dda81c2270aed8996c44ba63beceefaf38027b12b6525a2244",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/recommender.ts",
+    "enhanced_sha256": "db820ebd93bd859c7db4392419e474cfd7f9b478adab8b23fdbd75dde56cafb3",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/room3d.ts",
+    "enhanced_sha256": "62f1dd8473b5a30657ee6fc4c2bf4e17607774d65426efaf84653620ebb04840",
+    "existed": false
+  },
+  {
+    "path": "src/app/lib/seed.ts",
+    "enhanced_sha256": "68d3bd8eed8ea4c2debc88017bbcfe4e86f1935c29e2afce9e26ae98ad17be4c",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/store.tsx",
+    "enhanced_sha256": "a7c4b89345b2e7f1dc96e6b19e2be8b4e67c27324e77ade8361efc6d6594dff9",
+    "existed": true
+  },
+  {
+    "path": "src/app/lib/types.ts",
+    "enhanced_sha256": "b58a84da592eca6d0253ae162c1b7cc1ca24c02daf9b08f590798377ab3974a9",
+    "existed": true
+  },
+  {
+    "path": "src/styles/cinematic-hero.css",
+    "enhanced_sha256": "f7c27004378934d279789bc054f5c716017247314f41cfbefb9127a9d9726b24",
+    "existed": false
+  },
+  {
+    "path": "src/styles/enhancements.css",
+    "enhanced_sha256": "4b338c73ea9fc1a77c4192c2dd8e1b91678212932239366a58f979c0f249c3b4",
+    "existed": false
+  },
+  {
+    "path": "src/styles/index.css",
+    "enhanced_sha256": "86dd80f40c901533600ea8361aa027db828d6c63e6bcdd118210aeddbd1b7cdb",
+    "existed": true
+  }
+]

@@ -1,0 +1,69 @@
+[holds] Đã giữ phòng tạm thời {
+  roomId: 'r101',
+  checkIn: '2026-03-10',
+  checkOut: '2026-03-12',
+  ttl: 15
+}
+PASS giữ được phòng đang trống
+PASS chặn khi phiên khác đang giữ cùng phòng, cùng ngày
+[holds] Đã giữ phòng tạm thời {
+  roomId: 'r101',
+  checkIn: '2026-03-10',
+  checkOut: '2026-03-12',
+  ttl: 15
+}
+PASS không tự chặn hold của chính phiên mình
+[holds] Đã giữ phòng tạm thời {
+  roomId: 'r101',
+  checkIn: '2026-03-10',
+  checkOut: '2026-03-12',
+  ttl: 15
+}
+PASS trả phòng cùng ngày khách khác nhận thì KHÔNG tính là trùng
+PASS chặn khi phòng đã có đặt phòng xác nhận
+[holds] Đã giữ phòng tạm thời {
+  roomId: 'r101',
+  checkIn: '2026-03-10',
+  checkOut: '2026-03-12',
+  ttl: 15
+}
+PASS đặt phòng đã hủy không chiếm phòng
+PASS từ chối khoảng ngày không hợp lệ
+PASS hold hết hạn không còn hiệu lực
+[holds] Đã giữ phòng tạm thời {
+  roomId: 'r101',
+  checkIn: '2026-03-10',
+  checkOut: '2026-03-12',
+  ttl: 15
+}
+PASS hold hết hạn không chặn người khác đặt
+[holds] Tự động nhả 1 lượt giữ phòng hết hạn { ids: [ 'h1' ] }
+PASS pruneHolds đánh dấu nhả phòng hết hạn
+PASS hold đã chuyển thành đặt phòng thì không bị nhả
+PASS nhả hold thủ công thì hết chặn
+PASS khóa giá trong biên sàn/trần của bảng giá
+PASS giá chốt thủ công thắng mọi hệ số
+PASS báo giá cả kỳ = tổng từng đêm
+PASS tiền cọc 25% tính trên tổng đã báo giá
+[concurrency] Xung đột phiên bản trên bản ghi { current: 4, expected: 3 }
+PASS assertVersion phát hiện bản ghi đã bị người khác sửa
+[concurrency] Bỏ qua yêu cầu trùng lặp (idempotency) { key: 'test-0.138216970478506' }
+PASS runOnce chống bấm đúp — chỉ tạo một đặt phòng
+PASS chặn quy đổi dưới mức tối thiểu
+PASS chặn quy đổi vượt số điểm đang có
+PASS không cho giảm quá trần % hóa đơn
+PASS quy đổi thành công thì trừ điểm và sinh giảm giá
+PASS review khen phải dương hơn review phàn nàn
+PASS giợ được chủ đề để lễ tân biết sửa ở đâu
+PASS chỉ sinh việc nhắc thuộc danh mục đã định
+PASS bỏ qua đặt phòng đã hủy
+PASS chỉ tính giao dịch thành công, hoàn tiền bị trừ ra
+PASS số hóa đơn điện tử tăng dần, đúng định dạng
+PASS rejects invalid or rolled-over dates
+PASS returns zero nights for invalid dates instead of NaN
+PASS keeps local date through calendar roundtrip
+PASS rejects impossible dates and zero guests in holds
+PASS maps all six room studies
+PASS builds finite triangle geometry with a small budget
+PASS does not accept NaN or Infinity payments
+{"total":35,"passed":35,"failed":0}

@@ -1,0 +1,1 @@
+35 tests chạy bằng harness assertion ngoại tuyến (28 có sẵn + 7 mới), không phải Vitest chuẩn. Browser QA dùng Chromium headless, software WebGL, không thay cho kiểm thử thiết bị thật. Các log gốc được giữ; dữ liệu tài khoản trong ảnh/log là fixture demo. Xem báo cáo để biết phần chưa thử.
