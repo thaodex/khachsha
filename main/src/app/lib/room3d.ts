@@ -74,16 +74,21 @@ const VS=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec3 aColor;
 uniform mat4 uView;uniform mat4 uProjection;varying vec3 p;varying vec3 n;varying vec3 c;varying float m;
 void main(){p=aPosition;n=aNormal;c=aColor;m=aMaterial;gl_Position=uProjection*uView*vec4(p,1.0);}`;
 const FS=`precision mediump float;varying vec3 p;varying vec3 n;varying vec3 c;varying float m;uniform vec3 uEye;
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0);}
 void main(){vec3 color=c;
 if(m>.5&&m<1.5){float grain=sin(p.x*87.0+sin(p.z*6.0)*2.0)*.02+sin(p.x*18.0+p.z)*.04;float plank=step(.975,fract(p.x*2.3));color*=.97+grain-plank*.16;}
 if(m>1.5&&m<2.5){float vein=pow(.5+.5*sin(p.x*9.0+p.z*4.0+sin(p.z*5.0)*1.8),18.0);color=mix(color,vec3(.4),vein*.3);}
 if(m>2.5&&m<3.5){color=mix(vec3(.3,.49,.51),vec3(.78,.87,.83),clamp(p.y/2.8,0.0,1.0));color+=pow(max(0.0,sin(p.z*2.0+p.y*1.8)),16.0)*.1;}
 if(m>4.5)color*=.97+.03*sin(p.x*140.0)*sin(p.z*140.0);
-vec3 normal=normalize(n),light=normalize(vec3(-.6,1.0,1.2));
-color*=.62+max(dot(normal,light),0.0)*.38+max(dot(normal,normalize(vec3(1.0,.4,-1.0))),0.0)*.1;
-float spec=pow(max(dot(normal,normalize(light+normalize(uEye-p))),0.0),40.0);
-color+=vec3(1.0,.9,.73)*spec*(m>1.5&&m<4.5?.24:.03);
-color*=.87+.13*smoothstep(0.0,1.0,p.y);gl_FragColor=vec4(color,1.0);}`;
+vec3 normal=normalize(n),view=normalize(uEye-p),light=normalize(vec3(-.6,1.0,1.2)),fill=normalize(vec3(1.0,.4,-1.0));
+vec3 sky=vec3(.66,.71,.82),ground=vec3(.5,.44,.36),amb=mix(ground,sky,normal.y*.5+.5);
+color*=amb*.60+vec3(1.05,.98,.86)*max(dot(normal,light),0.0)*.40+vec3(.6,.66,.8)*max(dot(normal,fill),0.0)*.10;
+float spec=pow(max(dot(normal,normalize(light+view)),0.0),m>1.5&&m<4.5?58.0:26.0);
+color+=vec3(1.0,.92,.78)*spec*(m>1.5&&m<4.5?.30:.04);
+float fres=pow(1.0-max(dot(normal,view),0.0),4.0);color+=vec3(.9,.95,1.0)*fres*(m>1.5&&m<3.5?.16:.04);
+color*=1.0-.24*exp(-max(p.y,0.0)*7.0);
+color*=.87+.13*smoothstep(0.0,1.0,p.y);
+color=aces(color*1.02);gl_FragColor=vec4(color,1.0);}`;
 export interface RoomRenderer{orbit(dx:number,dy:number):void;zoom(delta:number):void;reset():void;resize():void;dispose():void}
 export function createRoomRenderer(canvas:HTMLCanvasElement,style:RoomStyle,onLost:()=>void):RoomRenderer{
  const gl=canvas.getContext('webgl',{alpha:false,antialias:true,powerPreference:'low-power'});if(!gl)throw Error('WebGL unavailable');
