@@ -369,6 +369,88 @@
 
 .lux-section__head .lux-eyebrow { margin-bottom: 2px; }
 
+/* ========================================= MỤC 5 — Con trỏ tuỳ biến (desktop) */
+.elev-has-cursor { cursor: none; }
+.elev-has-cursor input,
+.elev-has-cursor textarea,
+.elev-has-cursor select,
+.elev-has-cursor [contenteditable="true"] { cursor: auto; }
+.elev-cursor-dot,
+.elev-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  z-index: 9999;
+  transition: opacity var(--duration-fast) var(--ease-soft);
+}
+.elev-cursor-dot {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--color-gold-500);
+}
+.elev-cursor-ring {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1px solid var(--color-gold-500);
+  background: transparent;
+  will-change: transform;
+  transition: width var(--duration-fast) var(--ease-soft),
+              height var(--duration-fast) var(--ease-soft),
+              margin var(--duration-fast) var(--ease-soft),
+              background-color var(--duration-fast) var(--ease-soft),
+              opacity var(--duration-fast) var(--ease-soft);
+}
+.elev-cursor-ring.is-active {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  background: rgba(197, 160, 89, 0.12);
+}
+.elev-cursor-ring.is-press { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+
+/* ---------------------------------- MỤC 6.6 — Film grain tĩnh (không animate) */
+.elev-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 58;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------- MỤC 3.5 — Preloader nét chữ "SM" */
+.elev-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  background: var(--lux-ink, #14100a);
+  transition: opacity var(--duration-slow) var(--ease-luxury-out);
+}
+.elev-preloader.is-done { opacity: 0; pointer-events: none; }
+.elev-preloader svg { width: clamp(120px, 22vw, 180px); height: auto; }
+.elev-mono {
+  font-family: var(--lux-font-display, "Cormorant Garamond", serif);
+  font-size: 68px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  fill: transparent;
+  stroke: var(--color-gold-500);
+  stroke-width: 0.8;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: elev-draw 1500ms var(--ease-luxury-out) forwards,
+             elev-fill 700ms ease 1350ms forwards;
+}
+@keyframes elev-draw { to { stroke-dashoffset: 0; } }
+@keyframes elev-fill { to { fill: var(--color-gold-500); } }
+
 /* ============================ MỤC 8 — prefers-reduced-motion: tắt ambient */
 @media (prefers-reduced-motion: reduce) {
   .cinema-eyebrow span:first-child::after,
@@ -380,4 +462,10 @@
   .elev-top,
   .lux-header,
   .lux-reveal { transition: opacity 0.18s linear !important; }
+  .elev-grain { display: none; }
+  .elev-mono {
+    animation: none !important;
+    fill: var(--color-gold-500);
+    stroke-dashoffset: 0;
+  }
 }
