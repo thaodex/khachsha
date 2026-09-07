@@ -13,6 +13,7 @@ import { BookingBar } from "./BookingBar";
 import { RoomPreview } from "./RoomPreview";
 import { Reveal } from "./Reveal";
 import { ScrollTools } from "./ScrollTools";
+import { CountUp, CursorFx, Preloader } from "./Enhancements";
 
 /** Ảnh dự phòng theo thứ tự hạng phòng — dùng khi hạng phòng chưa có ảnh riêng. */
 const ROOM_FALLBACK = ["/media/room-deluxe.webp", "/media/room-suite.webp", "/media/room-superior.webp"];
@@ -38,11 +39,12 @@ const SIGNATURES = [
   { Icon: ConciergeBell, title: "Quản gia riêng", desc: "Một đầu mối lo mọi việc: đưa đón, đặt bàn, tour riêng, giặt là hoả tốc." },
 ];
 
-const BAND = [
-  { value: "4.9", label: "Điểm hài lòng" },
-  { value: "96%", label: "Khách quay lại" },
-  { value: "5′", label: "Xác nhận phòng" },
-  { value: "0₫", label: "Phí huỷ trước 48h" },
+/** Dải số liệu — tách phần số để đếm-lên (Mục 7), giữ nguyên hậu tố hiển thị. */
+const BAND: Array<{ to: number; decimals: number; suffix: string; label: string }> = [
+  { to: 4.9, decimals: 1, suffix: "", label: "Điểm hài lòng" },
+  { to: 96, decimals: 0, suffix: "%", label: "Khách quay lại" },
+  { to: 5, decimals: 0, suffix: "′", label: "Xác nhận phòng" },
+  { to: 0, decimals: 0, suffix: "₫", label: "Phí huỷ trước 48h" },
 ];
 
 const CATEGORY_META: Record<ServiceCatalogItem["category"], { label: string; Icon: typeof Shirt }> = {
@@ -91,6 +93,9 @@ export function Home({ onViewBookings, onOpenLegal }: { onViewBookings?: () => v
 
   return (
     <div>
+      <Preloader />
+      <CursorFx />
+      <div className="elev-grain" aria-hidden="true" />
       <ScrollTools />
 
       <LuxHero
@@ -158,7 +163,9 @@ export function Home({ onViewBookings, onOpenLegal }: { onViewBookings?: () => v
                       </div>
                       <div className="lux-price">
                         <span className="lux-price__label">Theo kỳ lưu trú</span>
-                        <span className="lux-price__value">{formatVND(quote?.avgPerNight ?? t.basePrice)}</span>{" "}
+                        <span className="lux-price__value">
+                          <CountUp to={quote?.avgPerNight ?? t.basePrice} format={formatVND} />
+                        </span>{" "}
                         <span className="lux-price__unit">/ đêm</span>
                       </div>
                     </div>
@@ -255,7 +262,9 @@ export function Home({ onViewBookings, onOpenLegal }: { onViewBookings?: () => v
           <div className="lux-band">
             {BAND.map((b) => (
               <div key={b.label} className="lux-band__item">
-                <span className="lux-band__value">{b.value}</span>
+                <span className="lux-band__value">
+                  <CountUp to={b.to} decimals={b.decimals} suffix={b.suffix} />
+                </span>
                 <span className="lux-band__label">{b.label}</span>
               </div>
             ))}
@@ -338,7 +347,7 @@ export function Home({ onViewBookings, onOpenLegal }: { onViewBookings?: () => v
               <p className="lux-lede lux-lede--light" style={{ textAlign: "center" }}>
                 Phần còn lại thanh toán khi nhận phòng. Huỷ miễn phí trước 48 giờ, lễ tân xác nhận trong ~5 phút.
               </p>
-              <button type="button" className="lux-btn lux-btn--gold" onClick={() => scrollTo("rooms")}>
+              <button type="button" className="lux-btn lux-btn--gold" data-magnetic onClick={() => scrollTo("rooms")}>
                 Chọn phòng ngay
               </button>
             </div>
