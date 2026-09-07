@@ -1,0 +1,228 @@
+/* =============================================================================
+   HOME ELEVATE — lớp tinh chỉnh SANG TRỌNG cho trang chủ (thuần additive)
+   - Chỉ đè lên class .lux-* / .cinema-* có sẵn, KHÔNG đổi cấu trúc HTML.
+   - Chỉ dùng token của design system (theme.css) + biến --lux-* + font-face
+     đã khai báo (--font-display / --lux-font-display, --lux-font-sans).
+   - Gỡ dòng @import './home-elevate.css' trong index.css là hoàn nguyên 100%.
+   ========================================================================== */
+
+.lux,
+.cinema-hero {
+  /* Ánh kim dùng chung — dựng từ champagne/gold của hệ thống */
+  --elev-gold-line: linear-gradient(90deg, transparent, var(--lux-champagne), transparent);
+  --elev-gold-sheen: linear-gradient(135deg, #e6cf9a 0%, var(--lux-champagne) 42%, #a9863f 100%);
+  --elev-glow: 0 24px 60px -30px rgba(138, 109, 51, 0.55);
+  scroll-behavior: smooth;
+}
+
+/* ---------------------------------------------------------- Tiêu đề mục */
+/* Chữ hiển thị nhẹ nhàng hơn + có vạch kim mảnh dưới eyebrow */
+.lux-title { letter-spacing: -0.012em; }
+.lux-eyebrow { position: relative; }
+.lux-eyebrow::before,
+.lux-eyebrow--center::after {
+  width: 34px;
+  background: var(--lux-champagne);
+  opacity: 0.85;
+}
+
+/* Chấm sáng lấp lánh ở đầu eyebrow cinematic */
+.cinema-eyebrow span:first-child {
+  box-shadow: 0 0 0 0 rgba(201, 173, 120, 0.6);
+  animation: elev-pulse 3.2s var(--lux-ease) infinite;
+}
+@keyframes elev-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 173, 120, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(201, 173, 120, 0); }
+}
+
+/* ------------------------------------------------------------- Nút bấm */
+/* Vệt sáng lướt qua khi hover + nâng mềm + quầng kim cho nút vàng */
+.lux-btn { position: relative; overflow: hidden; isolation: isolate; }
+.lux-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-160%);
+  transition: transform 0.7s var(--lux-ease);
+}
+.lux-btn:hover:not([disabled])::before { transform: translateX(160%); }
+
+.lux-btn--gold {
+  background: var(--elev-gold-sheen);
+  border-color: transparent;
+  box-shadow: 0 10px 28px -16px rgba(138, 109, 51, 0.7);
+}
+.lux-btn--gold:hover:not([disabled]) {
+  box-shadow: var(--elev-glow);
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------- Thẻ phòng */
+/* Chiều sâu ảnh + viền kim khi hover + giá ánh kim */
+.lux-room { position: relative; }
+.lux-room__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, rgba(15, 13, 11, 0.28) 100%);
+  opacity: 0.9;
+  transition: opacity 0.6s var(--lux-ease);
+}
+.lux-room:hover .lux-room__media::after { opacity: 1; }
+.lux-room:hover {
+  box-shadow: var(--lux-shadow-lg), var(--elev-glow);
+  border-color: var(--lux-champagne);
+}
+.lux-price__value {
+  background: var(--elev-gold-sheen);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Chấm "còn phòng" khẽ thở để có sức sống */
+.lux-flag:not(.lux-flag--out) i { animation: elev-breathe 2.6s var(--lux-ease) infinite; }
+@keyframes elev-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.55; }
+}
+
+/* --------------------------------------------------------- Tiện nghi */
+.lux-amenity { position: relative; transition: background-color 0.4s var(--lux-ease), transform 0.4s var(--lux-ease); }
+.lux-amenity:hover { transform: translateY(-4px); }
+.lux-amenity__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid var(--lux-line);
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(201, 173, 120, 0.16), transparent 60%),
+    var(--lux-white);
+  transition: border-color 0.4s var(--lux-ease), box-shadow 0.4s var(--lux-ease);
+}
+.lux-amenity:hover .lux-amenity__icon {
+  border-color: var(--lux-champagne);
+  box-shadow: 0 12px 26px -16px rgba(138, 109, 51, 0.55);
+}
+
+/* --------------------------------------------------- Dải số (nền tối) */
+/* Vạch phân cách kim mảnh giữa các số + số ánh kim nổi khối */
+.lux-band { position: relative; }
+.lux-band__item + .lux-band__item::before {
+  content: "";
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(201, 173, 120, 0.4), transparent);
+}
+.lux-band__item { position: relative; }
+.lux-band__value {
+  background: linear-gradient(180deg, #e9d3a3, var(--lux-champagne) 60%, #a9863f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --------------------------------------------------------- Đánh giá */
+/* Dấu ngoặc kép trang trí + vạch kim trên + nâng khi hover */
+.lux-quote { position: relative; overflow: hidden; transition: transform 0.5s var(--lux-ease), box-shadow 0.5s var(--lux-ease), border-color 0.5s var(--lux-ease); }
+.lux-quote::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--elev-gold-line);
+  opacity: 0;
+  transition: opacity 0.5s var(--lux-ease);
+}
+.lux-quote::after {
+  content: "\201C";
+  position: absolute;
+  right: 20px;
+  top: 6px;
+  font-family: var(--lux-font-display);
+  font-size: 5.5rem;
+  line-height: 1;
+  color: var(--lux-champagne);
+  opacity: 0.14;
+  pointer-events: none;
+}
+.lux-quote:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--lux-shadow-lg);
+  border-color: var(--lux-champagne);
+}
+.lux-quote:hover::before { opacity: 1; }
+
+/* ----------------------------------------------------------- CTA cuối */
+/* Khung kim mảnh bên trong + zoom ảnh rất chậm cho cảm giác điện ảnh */
+.lux-cta img { animation: elev-cta-drift 30s ease-in-out infinite alternate; }
+@keyframes elev-cta-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.14); }
+}
+.lux-cta__inner::before {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(201, 173, 120, 0.35);
+  border-radius: var(--lux-radius-md);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------- Hero điện ảnh */
+/* Tiêu đề in nghiêng ánh kim chuyển màu chậm + lede rõ hơn + teaser kính */
+.cinema-copy h1 em {
+  background: linear-gradient(90deg, #e9d3a3, var(--lux-champagne), #f0dcae, var(--lux-champagne));
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: elev-gold-pan 9s linear infinite;
+}
+@keyframes elev-gold-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.cinema-room-teaser {
+  backdrop-filter: blur(10px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: border-color 0.4s var(--lux-ease), transform 0.4s var(--lux-ease), box-shadow 0.4s var(--lux-ease);
+}
+.cinema-room-teaser:hover {
+  border-color: rgba(201, 173, 120, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.7);
+}
+
+/* Vignette rất nhẹ để chiều sâu ảnh hero tự nhiên hơn */
+.cinema-shade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(130% 100% at 50% 26%, transparent 52%, rgba(8, 10, 12, 0.42) 100%);
+}
+
+/* --------------------------------------------- Chuyển cảnh giữa các mục */
+/* Vạch kim mảnh mở đầu mỗi tiêu đề mục có eyebrow */
+.lux-section__head .lux-eyebrow { margin-bottom: 2px; }
+
+/* --------------------------------------------------------- Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .lux,
+  .cinema-hero { scroll-behavior: auto; }
+  .cinema-eyebrow span:first-child,
+  .lux-flag i,
+  .lux-cta img,
+  .cinema-copy h1 em,
+  .lux-btn::before { animation: none !important; }
+  .lux-btn:hover:not([disabled])::before { transform: translateX(-160%); }
+}
