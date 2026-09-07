@@ -12,6 +12,7 @@ import { LuxHero } from "./LuxHero";
 import { BookingBar } from "./BookingBar";
 import { RoomPreview } from "./RoomPreview";
 import { Reveal } from "./Reveal";
+import { ScrollTools } from "./ScrollTools";
 
 /** Ảnh dự phòng theo thứ tự hạng phòng — dùng khi hạng phòng chưa có ảnh riêng. */
 const ROOM_FALLBACK = ["/media/room-deluxe.webp", "/media/room-suite.webp", "/media/room-superior.webp"];
@@ -90,6 +91,8 @@ export function Home({ onViewBookings, onOpenLegal }: { onViewBookings?: () => v
 
   return (
     <div>
+      <ScrollTools />
+
       <LuxHero
         roomCount={rooms.length}
         reviewCount={1284}
