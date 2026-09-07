@@ -3,9 +3,9 @@
    - Chỉ đè lên class .lux-* / .cinema-* có sẵn, KHÔNG đổi cấu trúc HTML.
    - Chỉ dùng token design system (theme.css) + biến --lux-* + font-face
      đã khai báo (--font-display / --lux-font-display, --lux-font-sans).
-   - Nguyên tắc MƯỢT: chỉ animate transform & opacity (chạy trên GPU),
-     shadow/viền chuyển bằng lớp pseudo mờ dần bằng opacity — KHÔNG transition
-     trực tiếp box-shadow / background-position / backdrop-filter.
+   - MƯỢT: chỉ animate transform & opacity; KHÔNG transition box-shadow /
+     background-position / backdrop-filter; KHÔNG ép layer (translateZ) thường
+     trực — chỉ nhắc will-change đúng lúc hover để trình duyệt tự dọn layer.
    - Gỡ dòng @import './home-elevate.css' trong index.css là hoàn nguyên 100%.
    ========================================================================== */
 
@@ -14,18 +14,6 @@
   --elev-gold-line: linear-gradient(90deg, transparent, var(--lux-champagne), transparent);
   --elev-gold-sheen: linear-gradient(135deg, #e6cf9a 0%, var(--lux-champagne) 42%, #a9863f 100%);
   --elev-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  scroll-behavior: smooth;
-}
-
-/* Gợi ý trình duyệt tách layer cho các phần tử tương tác -> transform mượt */
-.lux-room,
-.lux-quote,
-.lux-amenity,
-.lux-btn,
-.cinema-room-teaser,
-.lux-cta img {
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 /* ---------------------------------------------------------- Tiêu đề mục */
@@ -38,16 +26,15 @@
   opacity: 0.85;
 }
 
-/* Chấm sáng ở đầu eyebrow cinematic — dùng opacity thay vì box-shadow spread */
+/* Chấm sáng ở đầu eyebrow cinematic — transform+opacity (compositor) */
 .cinema-eyebrow span:first-child { position: relative; }
 .cinema-eyebrow span:first-child::after {
   content: "";
   position: absolute;
   inset: -5px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201, 173, 120, 0.55), transparent 70%);
-  animation: elev-pulse 3.2s var(--elev-ease) infinite;
-  will-change: transform, opacity;
+  background: radial-gradient(circle, rgba(201, 173, 120, 0.5), transparent 70%);
+  animation: elev-pulse 3.4s var(--elev-ease) infinite;
 }
 @keyframes elev-pulse {
   0%, 100% { transform: scale(0.6); opacity: 0; }
@@ -55,38 +42,38 @@
 }
 
 /* ------------------------------------------------------------- Nút bấm */
-/* Vệt sáng lướt (transform) + nâng mềm. KHÔNG transition box-shadow. */
 .lux-btn {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.45s var(--elev-ease);
+  transition: transform 0.4s var(--elev-ease);
 }
 .lux-btn::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.32) 50%, transparent 70%);
   transform: translateX(-160%);
-  transition: transform 0.7s var(--elev-ease);
-  will-change: transform;
+  transition: transform 0.65s var(--elev-ease);
 }
+.lux-btn:hover:not([disabled]) { will-change: transform; }
 .lux-btn:hover:not([disabled])::before { transform: translateX(160%); }
 .lux-btn:active:not([disabled]) { transform: translateY(0) scale(0.985); }
 
 .lux-btn--gold {
   background: var(--elev-gold-sheen);
   border-color: transparent;
-  box-shadow: 0 10px 28px -16px rgba(138, 109, 51, 0.7);
+  box-shadow: 0 10px 26px -16px rgba(138, 109, 51, 0.7);
 }
 .lux-btn--gold:hover:not([disabled]) { transform: translateY(-2px); }
 
 /* --------------------------------------------------------- Thẻ phòng */
-/* Nâng bằng transform; shadow là lớp ::before mờ dần bằng opacity (mượt). */
+/* Nâng bằng transform; bóng là lớp ::before mờ dần bằng opacity.
+   KHÔNG ép layer thường trực — chỉ will-change khi hover. */
 .lux-room {
   position: relative;
-  transition: transform 0.5s var(--elev-ease), border-color 0.5s var(--elev-ease);
+  transition: transform 0.45s var(--elev-ease), border-color 0.45s var(--elev-ease);
 }
 .lux-room::before {
   content: "";
@@ -94,23 +81,23 @@
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  box-shadow: 0 26px 60px -30px rgba(138, 109, 51, 0.55), var(--lux-shadow-lg);
+  box-shadow: 0 20px 42px -24px rgba(138, 109, 51, 0.5);
   opacity: 0;
-  transition: opacity 0.5s var(--elev-ease);
-  will-change: opacity;
+  transition: opacity 0.45s var(--elev-ease);
 }
 .lux-room__media::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 55%, rgba(15, 13, 11, 0.28) 100%);
-  opacity: 0.9;
-  transition: opacity 0.5s var(--elev-ease);
+  background: linear-gradient(180deg, transparent 58%, rgba(15, 13, 11, 0.26) 100%);
+  opacity: 0.85;
+  transition: opacity 0.45s var(--elev-ease);
 }
 .lux-room:hover {
   transform: translateY(-4px);
   border-color: var(--lux-champagne);
+  will-change: transform;
 }
 .lux-room:hover::before { opacity: 1; }
 .lux-room:hover .lux-room__media::after { opacity: 1; }
@@ -122,20 +109,14 @@
   color: transparent;
 }
 /* Chấm "còn phòng" khẽ thở — transform+opacity */
-.lux-flag:not(.lux-flag--out) i {
-  animation: elev-breathe 2.6s var(--elev-ease) infinite;
-  will-change: transform, opacity;
-}
+.lux-flag:not(.lux-flag--out) i { animation: elev-breathe 2.8s var(--elev-ease) infinite; }
 @keyframes elev-breathe {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.5); opacity: 0.55; }
 }
 
 /* --------------------------------------------------------- Tiện nghi */
-.lux-amenity {
-  position: relative;
-  transition: transform 0.45s var(--elev-ease);
-}
+.lux-amenity { position: relative; transition: transform 0.4s var(--elev-ease); }
 .lux-amenity:hover { transform: translateY(-4px); }
 .lux-amenity__icon {
   position: relative;
@@ -148,22 +129,23 @@
   background:
     radial-gradient(120% 120% at 30% 20%, rgba(201, 173, 120, 0.16), transparent 60%),
     var(--lux-white);
-  transition: border-color 0.45s var(--elev-ease);
+  transition: border-color 0.4s var(--elev-ease);
 }
 .lux-amenity__icon::after {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: 50%;
-  box-shadow: 0 12px 26px -16px rgba(138, 109, 51, 0.55);
+  box-shadow: 0 12px 24px -16px rgba(138, 109, 51, 0.55);
   opacity: 0;
-  transition: opacity 0.45s var(--elev-ease);
+  transition: opacity 0.4s var(--elev-ease);
 }
 .lux-amenity:hover .lux-amenity__icon { border-color: var(--lux-champagne); }
 .lux-amenity:hover .lux-amenity__icon::after { opacity: 1; }
 
 /* --------------------------------------------------- Dải số (nền tối) */
 .lux-band { position: relative; }
+.lux-band__item { position: relative; }
 .lux-band__item + .lux-band__item::before {
   content: "";
   position: absolute;
@@ -173,7 +155,6 @@
   width: 1px;
   background: linear-gradient(180deg, transparent, rgba(201, 173, 120, 0.4), transparent);
 }
-.lux-band__item { position: relative; }
 .lux-band__value {
   background: linear-gradient(180deg, #e9d3a3, var(--lux-champagne) 60%, #a9863f);
   -webkit-background-clip: text;
@@ -185,7 +166,7 @@
 .lux-quote {
   position: relative;
   overflow: hidden;
-  transition: transform 0.5s var(--elev-ease), border-color 0.5s var(--elev-ease);
+  transition: transform 0.45s var(--elev-ease), border-color 0.45s var(--elev-ease);
 }
 .lux-quote::before {
   content: "";
@@ -194,7 +175,7 @@
   height: 2px;
   background: var(--elev-gold-line);
   opacity: 0;
-  transition: opacity 0.5s var(--elev-ease);
+  transition: opacity 0.45s var(--elev-ease);
 }
 .lux-quote::after {
   content: "\201C";
@@ -208,21 +189,15 @@
   opacity: 0.14;
   pointer-events: none;
 }
-.lux-quote:hover {
-  transform: translateY(-5px);
-  border-color: var(--lux-champagne);
-}
+.lux-quote:hover { transform: translateY(-5px); border-color: var(--lux-champagne); }
 .lux-quote:hover::before { opacity: 1; }
 
 /* ----------------------------------------------------------- CTA cuối */
-/* Zoom ảnh rất chậm bằng transform (GPU) */
-.lux-cta img {
-  animation: elev-cta-drift 30s ease-in-out infinite alternate;
-  will-change: transform;
-}
+/* Zoom ảnh rất chậm bằng transform (GPU) — không repaint */
+.lux-cta img { animation: elev-cta-drift 34s ease-in-out infinite alternate; }
 @keyframes elev-cta-drift {
   from { transform: scale(1.04); }
-  to { transform: scale(1.14); }
+  to { transform: scale(1.12); }
 }
 .lux-cta__inner::before {
   content: "";
@@ -234,20 +209,14 @@
 }
 
 /* --------------------------------------------------- Hero điện ảnh */
-/* Tiêu đề ánh kim: pan nhẹ, chỉ chạy khi con trỏ không tương tác nặng */
+/* Chữ vàng: gradient TĨNH (không animate background-position -> hết repaint) */
 .cinema-copy h1 em {
-  background: linear-gradient(90deg, #e9d3a3, var(--lux-champagne), #f0dcae, var(--lux-champagne));
-  background-size: 220% 100%;
+  background: linear-gradient(96deg, #efd9a6, var(--lux-champagne) 45%, #b98f43);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: elev-gold-pan 12s ease-in-out infinite;
 }
-@keyframes elev-gold-pan {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-/* Teaser kính: blur tĩnh (không transition), chỉ transform+viền đổi khi hover */
+/* Teaser kính: blur tĩnh, chỉ transform + viền đổi khi hover */
 .cinema-room-teaser {
   backdrop-filter: blur(8px) saturate(1.08);
   -webkit-backdrop-filter: blur(8px) saturate(1.08);
@@ -258,8 +227,7 @@
   border-color: rgba(201, 173, 120, 0.6);
   transform: translateY(-3px);
 }
-
-/* Vignette hero tĩnh — tạo chiều sâu, không animate */
+/* Vignette hero tĩnh */
 .cinema-shade::after {
   content: "";
   position: absolute;
@@ -268,16 +236,78 @@
   background: radial-gradient(130% 100% at 50% 26%, transparent 52%, rgba(8, 10, 12, 0.42) 100%);
 }
 
+/* =============================================================== UX MỚI */
+
+/* --- Header: co gọn + nền kính khi cuộn (dùng trạng thái --solid sẵn có) */
+.lux-header { transition: padding 0.35s var(--elev-ease), background-color 0.35s var(--elev-ease), box-shadow 0.35s var(--elev-ease); }
+.lux-header--solid {
+  backdrop-filter: saturate(1.1) blur(8px);
+  -webkit-backdrop-filter: saturate(1.1) blur(8px);
+  box-shadow: 0 1px 0 var(--lux-line), 0 10px 30px -24px rgba(28, 25, 23, 0.5);
+}
+.lux-header--solid .lux-header__inner { padding-top: 10px; padding-bottom: 10px; }
+
+/* --- Reveal stagger mượt hơn (chỉ transform+opacity) */
+.lux-reveal { transition: opacity 0.7s var(--elev-ease), transform 0.7s var(--elev-ease); }
+
+/* --- Progress bar đọc trang (mảnh, ánh kim) */
+.elev-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform: scaleX(var(--elev-p, 0));
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--lux-champagne), #efd9a6);
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* --- Nút về đầu trang */
+.elev-top {
+  position: fixed;
+  right: clamp(16px, 4vw, 40px);
+  bottom: clamp(16px, 4vw, 40px);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--lux-line-strong);
+  background: var(--lux-ivory);
+  color: var(--lux-ink);
+  box-shadow: var(--lux-shadow-md);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  transition: opacity 0.35s var(--elev-ease), transform 0.35s var(--elev-ease), border-color 0.35s var(--elev-ease);
+  z-index: 55;
+}
+.elev-top.is-on { opacity: 1; transform: translateY(0) scale(1); }
+.elev-top:hover { border-color: var(--lux-champagne); transform: translateY(-2px) scale(1.04); }
+.elev-top:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+
+/* --- Focus rõ ràng cho bàn phím (dùng token --ring của design system) */
+.lux a:focus-visible,
+.lux button:focus-visible,
+.lux input:focus-visible,
+.lux select:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .lux-section__head .lux-eyebrow { margin-bottom: 2px; }
 
 /* --------------------------------------------------------- Reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  .lux,
-  .cinema-hero { scroll-behavior: auto; }
   .cinema-eyebrow span:first-child::after,
   .lux-flag i,
   .lux-cta img,
-  .cinema-copy h1 em,
   .lux-btn::before { animation: none !important; }
   .lux-btn:hover:not([disabled])::before { transform: translateX(-160%); }
+  .elev-top,
+  .lux-header,
+  .lux-reveal { transition: opacity 0.2s linear; }
 }
