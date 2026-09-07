@@ -264,10 +264,10 @@
   pointer-events: none;
 }
 
-/* --- Nút về đầu trang */
+/* --- Nút về đầu trang (đặt GÓC TRÁI dưới để không đè nút chat/trợ lý ở phải) */
 .elev-top {
   position: fixed;
-  right: clamp(16px, 4vw, 40px);
+  left: clamp(16px, 4vw, 40px);
   bottom: clamp(16px, 4vw, 40px);
   width: 46px;
   height: 46px;
