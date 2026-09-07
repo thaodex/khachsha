@@ -1,20 +1,59 @@
 /* =============================================================================
-   HOME ELEVATE — lớp tinh chỉnh SANG TRỌNG + MƯỢT cho trang chủ (additive)
-   - Chỉ đè lên class .lux-* / .cinema-* có sẵn, KHÔNG đổi cấu trúc HTML.
-   - Chỉ dùng token design system (theme.css) + biến --lux-* + font-face
-     đã khai báo (--font-display / --lux-font-display, --lux-font-sans).
-   - MƯỢT: chỉ animate transform & opacity; KHÔNG transition box-shadow /
-     background-position / backdrop-filter; KHÔNG ép layer (translateZ) thường
-     trực — chỉ nhắc will-change đúng lúc hover để trình duyệt tự dọn layer.
-   - Gỡ dòng @import './home-elevate.css' trong index.css là hoàn nguyên 100%.
+   HOME ELEVATE — nâng cấp UI/UX theo prompt "SAO MAI v2" (lớp additive)
+   Triết lý (Mục 2 & 7 của prompt): CHỈ 1 khoảnh khắc ambient chính (hero) +
+   1 phụ (CTA cuối). Mọi section khác IM LẶNG — không fade-slide-up domino;
+   sự sống động đến từ response-motion khi hover/focus/click.
+   Chỉ dùng token design system (theme.css) + biến --lux-* + font-face đã khai
+   báo. Mọi animation chỉ chạy transform/opacity. Gỡ @import là hoàn nguyên.
    ========================================================================== */
+
+/* ============================================================ MỤC 1 — TOKEN */
+/* Khai báo dạng CSS variables để có thể chỉnh trực tiếp trong CSS. */
+:root {
+  /* 1.1 Gold (alias sang bảng màu champagne sẵn có, thêm biến còn thiếu) */
+  --color-gold-300: #e8d3a3;
+  --color-gold-500: #c5a059;
+  --color-gold-700: #a3814a;
+
+  /* 1.4 Bóng đổ ấm màu, tăng dần theo cấp bậc (không dùng 1 shadow cho mọi thứ) */
+  --shadow-1: 0 2px 8px rgba(20, 14, 8, 0.12);
+  --shadow-2: 0 8px 24px rgba(20, 14, 8, 0.18);
+  --shadow-3: 0 20px 48px rgba(20, 14, 8, 0.28), 0 4px 12px rgba(20, 14, 8, 0.14);
+  --shadow-gold-glow: 0 0 32px rgba(197, 160, 89, 0.28);
+
+  /* 1.6 Motion tokens */
+  --ease-luxury-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-luxury-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-instant: 120ms;
+  --duration-fast: 250ms;
+  --duration-base: 400ms;
+  --duration-slow: 700ms;
+  --duration-cinematic: 1400ms;
+
+  /* 1.7 Blur kính mờ */
+  --blur-glass-sm: 12px;
+  --blur-glass-lg: 20px;
+}
 
 .lux,
 .cinema-hero {
   --elev-gold-line: linear-gradient(90deg, transparent, var(--lux-champagne), transparent);
-  --elev-gold-sheen: linear-gradient(135deg, #e6cf9a 0%, var(--lux-champagne) 42%, #a9863f 100%);
-  --elev-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --elev-gold-sheen: linear-gradient(135deg, var(--color-gold-300) 0%, var(--lux-champagne) 42%, var(--color-gold-700) 100%);
 }
+
+/* ================================================ MỤC 2+7 — KỶ LUẬT REVEAL */
+/* Bỏ fade-slide-up domino: reveal chỉ còn fade opacity MỘT lần, không dịch
+   vị trí, không stagger theo bậc -> cả khối hiện như một thể thống nhất. */
+.lux-reveal {
+  transform: none !important;
+  transition: opacity var(--duration-base) var(--ease-luxury-out) !important;
+}
+.lux-reveal.is-in { transform: none !important; }
+.lux-reveal--d1,
+.lux-reveal--d2,
+.lux-reveal--d3 { transition-delay: 0s !important; }
 
 /* ---------------------------------------------------------- Tiêu đề mục */
 .lux-title { letter-spacing: -0.012em; }
@@ -26,7 +65,7 @@
   opacity: 0.85;
 }
 
-/* Chấm sáng ở đầu eyebrow cinematic — transform+opacity (compositor) */
+/* Chấm sáng đầu eyebrow HERO (ambient — được phép vì thuộc khoảnh khắc hero) */
 .cinema-eyebrow span:first-child { position: relative; }
 .cinema-eyebrow span:first-child::after {
   content: "";
@@ -34,19 +73,20 @@
   inset: -5px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(201, 173, 120, 0.5), transparent 70%);
-  animation: elev-pulse 3.4s var(--elev-ease) infinite;
+  animation: elev-pulse 3.4s var(--ease-soft) infinite;
 }
 @keyframes elev-pulse {
   0%, 100% { transform: scale(0.6); opacity: 0; }
   50% { transform: scale(1.6); opacity: 1; }
 }
 
-/* ------------------------------------------------------------- Nút bấm */
+/* ---------------------------------------- MỤC 6.1 — Nút (response-motion) */
 .lux-btn {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.4s var(--elev-ease);
+  transition: transform var(--duration-fast) var(--ease-soft),
+              box-shadow var(--duration-fast) var(--ease-soft);
 }
 .lux-btn::before {
   content: "";
@@ -55,25 +95,24 @@
   z-index: -1;
   background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.32) 50%, transparent 70%);
   transform: translateX(-160%);
-  transition: transform 0.65s var(--elev-ease);
+  transition: transform var(--duration-slow) var(--ease-soft);
 }
 .lux-btn:hover:not([disabled]) { will-change: transform; }
 .lux-btn:hover:not([disabled])::before { transform: translateX(160%); }
-.lux-btn:active:not([disabled]) { transform: translateY(0) scale(0.985); }
+/* Press feedback nhanh (Mục 6.1) */
+.lux-btn:active:not([disabled]) { transform: scale(0.97); transition-duration: var(--duration-instant); transition-timing-function: var(--ease-snap); }
 
 .lux-btn--gold {
   background: var(--elev-gold-sheen);
   border-color: transparent;
-  box-shadow: 0 10px 26px -16px rgba(138, 109, 51, 0.7);
+  box-shadow: var(--shadow-1);
 }
-.lux-btn--gold:hover:not([disabled]) { transform: translateY(-2px); }
+.lux-btn--gold:hover:not([disabled]) { transform: translateY(-2px); box-shadow: var(--shadow-2), var(--shadow-gold-glow); }
 
-/* --------------------------------------------------------- Thẻ phòng */
-/* Nâng bằng transform; bóng là lớp ::before mờ dần bằng opacity.
-   KHÔNG ép layer thường trực — chỉ will-change khi hover. */
+/* ---------------------------------------- MỤC 6.3 — Card phòng (hover only) */
 .lux-room {
   position: relative;
-  transition: transform 0.45s var(--elev-ease), border-color 0.45s var(--elev-ease);
+  transition: transform var(--duration-fast) var(--ease-soft), border-color var(--duration-fast) var(--ease-soft);
 }
 .lux-room::before {
   content: "";
@@ -81,9 +120,9 @@
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  box-shadow: 0 20px 42px -24px rgba(138, 109, 51, 0.5);
+  box-shadow: var(--shadow-3);
   opacity: 0;
-  transition: opacity 0.45s var(--elev-ease);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
 .lux-room__media::after {
   content: "";
@@ -92,7 +131,7 @@
   pointer-events: none;
   background: linear-gradient(180deg, transparent 58%, rgba(15, 13, 11, 0.26) 100%);
   opacity: 0.85;
-  transition: opacity 0.45s var(--elev-ease);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
 .lux-room:hover {
   transform: translateY(-4px);
@@ -108,15 +147,15 @@
   background-clip: text;
   color: transparent;
 }
-/* Chấm "còn phòng" khẽ thở — transform+opacity */
-.lux-flag:not(.lux-flag--out) i { animation: elev-breathe 2.8s var(--elev-ease) infinite; }
+/* Badge "còn X phòng" pulse rất nhẹ (Mục 6.3) — tắt khi reduce-motion */
+.lux-flag:not(.lux-flag--out) i { animation: elev-breathe 2.4s var(--ease-soft) infinite; }
 @keyframes elev-breathe {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.5); opacity: 0.55; }
 }
 
-/* --------------------------------------------------------- Tiện nghi */
-.lux-amenity { position: relative; transition: transform 0.4s var(--elev-ease); }
+/* ---------------------------------------- MỤC 7 — 4 tiện ích (hover only) */
+.lux-amenity { position: relative; transition: transform var(--duration-fast) var(--ease-soft); }
 .lux-amenity:hover { transform: translateY(-4px); }
 .lux-amenity__icon {
   position: relative;
@@ -129,18 +168,19 @@
   background:
     radial-gradient(120% 120% at 30% 20%, rgba(201, 173, 120, 0.16), transparent 60%),
     var(--lux-white);
-  transition: border-color 0.4s var(--elev-ease);
+  /* icon xoay nhẹ khi hover (Mục 7) */
+  transition: border-color var(--duration-fast) var(--ease-soft), transform var(--duration-base) var(--ease-soft);
 }
 .lux-amenity__icon::after {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: 50%;
-  box-shadow: 0 12px 24px -16px rgba(138, 109, 51, 0.55);
+  box-shadow: var(--shadow-2);
   opacity: 0;
-  transition: opacity 0.4s var(--elev-ease);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
-.lux-amenity:hover .lux-amenity__icon { border-color: var(--lux-champagne); }
+.lux-amenity:hover .lux-amenity__icon { border-color: var(--lux-champagne); transform: perspective(400px) rotateY(15deg); }
 .lux-amenity:hover .lux-amenity__icon::after { opacity: 1; }
 
 /* --------------------------------------------------- Dải số (nền tối) */
@@ -156,17 +196,17 @@
   background: linear-gradient(180deg, transparent, rgba(201, 173, 120, 0.4), transparent);
 }
 .lux-band__value {
-  background: linear-gradient(180deg, #e9d3a3, var(--lux-champagne) 60%, #a9863f);
+  background: linear-gradient(180deg, var(--color-gold-300), var(--lux-champagne) 60%, var(--color-gold-700));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* --------------------------------------------------------- Đánh giá */
+/* ---------------------------------------- MỤC 7 — Testimonial (hover only) */
 .lux-quote {
   position: relative;
   overflow: hidden;
-  transition: transform 0.45s var(--elev-ease), border-color 0.45s var(--elev-ease);
+  transition: transform var(--duration-fast) var(--ease-soft), border-color var(--duration-fast) var(--ease-soft);
 }
 .lux-quote::before {
   content: "";
@@ -175,7 +215,7 @@
   height: 2px;
   background: var(--elev-gold-line);
   opacity: 0;
-  transition: opacity 0.45s var(--elev-ease);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
 .lux-quote::after {
   content: "\201C";
@@ -187,13 +227,17 @@
   line-height: 1;
   color: var(--lux-champagne);
   opacity: 0.14;
+  transition: transform var(--duration-fast) var(--ease-soft), opacity var(--duration-fast) var(--ease-soft);
   pointer-events: none;
 }
-.lux-quote:hover { transform: translateY(-5px); border-color: var(--lux-champagne); }
+.lux-quote:hover { transform: translateY(-4px); border-color: var(--lux-champagne); }
 .lux-quote:hover::before { opacity: 1; }
+/* dấu ngoặc kép phóng to nhẹ khi hover (Mục 7) */
+.lux-quote:hover::after { transform: scale(1.12); opacity: 0.2; }
 
-/* ----------------------------------------------------------- CTA cuối */
-/* Zoom ảnh rất chậm bằng transform (GPU) — không repaint */
+/* =============================== MỤC 7 — CTA cuối: SIGNATURE (phụ) =========== */
+/* Nền ảnh parallax nhẹ (drift chậm) + viền sáng chạy quanh khung (chu kỳ 6s). */
+.lux-cta { position: relative; }
 .lux-cta img { animation: elev-cta-drift 34s ease-in-out infinite alternate; }
 @keyframes elev-cta-drift {
   from { transform: scale(1.04); }
@@ -203,31 +247,53 @@
   content: "";
   position: absolute;
   inset: 22px;
-  border: 1px solid rgba(201, 173, 120, 0.35);
+  border: 1px solid rgba(201, 173, 120, 0.28);
   border-radius: var(--lux-radius-md);
   pointer-events: none;
 }
+/* Viền sáng chạy — dùng conic-gradient + mask, chỉ animate góc (compositor) */
+@property --elev-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.lux-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--elev-angle),
+    transparent 0 60%,
+    var(--color-gold-300) 74%,
+    var(--color-gold-500) 82%,
+    transparent 92% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: elev-border-run 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes elev-border-run { to { --elev-angle: 360deg; } }
 
 /* --------------------------------------------------- Hero điện ảnh */
-/* Chữ vàng: gradient TĨNH (không animate background-position -> hết repaint) */
 .cinema-copy h1 em {
-  background: linear-gradient(96deg, #efd9a6, var(--lux-champagne) 45%, #b98f43);
+  background: linear-gradient(96deg, var(--color-gold-300), var(--lux-champagne) 45%, var(--color-gold-700));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-/* Teaser kính: blur tĩnh, chỉ transform + viền đổi khi hover */
 .cinema-room-teaser {
-  backdrop-filter: blur(8px) saturate(1.08);
-  -webkit-backdrop-filter: blur(8px) saturate(1.08);
+  backdrop-filter: blur(var(--blur-glass-sm)) saturate(1.08);
+  -webkit-backdrop-filter: blur(var(--blur-glass-sm)) saturate(1.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  transition: transform 0.4s var(--elev-ease), border-color 0.4s var(--elev-ease);
+  transition: transform var(--duration-fast) var(--ease-soft), border-color var(--duration-fast) var(--ease-soft);
 }
 .cinema-room-teaser:hover {
   border-color: rgba(201, 173, 120, 0.6);
   transform: translateY(-3px);
 }
-/* Vignette hero tĩnh */
 .cinema-shade::after {
   content: "";
   position: absolute;
@@ -236,35 +302,38 @@
   background: radial-gradient(130% 100% at 50% 26%, transparent 52%, rgba(8, 10, 12, 0.42) 100%);
 }
 
-/* =============================================================== UX MỚI */
-
-/* --- Header: co gọn + nền kính khi cuộn (dùng trạng thái --solid sẵn có) */
-.lux-header { transition: padding 0.35s var(--elev-ease), background-color 0.35s var(--elev-ease), box-shadow 0.35s var(--elev-ease); }
+/* ================================================ MỤC 6.4 — Nav khi cuộn */
+.lux-header { transition: padding var(--duration-base) var(--ease-soft), background-color var(--duration-base) var(--ease-soft), box-shadow var(--duration-base) var(--ease-soft); }
 .lux-header--solid {
-  backdrop-filter: saturate(1.1) blur(8px);
-  -webkit-backdrop-filter: saturate(1.1) blur(8px);
-  box-shadow: 0 1px 0 var(--lux-line), 0 10px 30px -24px rgba(28, 25, 23, 0.5);
+  backdrop-filter: saturate(1.1) blur(var(--blur-glass-lg));
+  -webkit-backdrop-filter: saturate(1.1) blur(var(--blur-glass-lg));
+  box-shadow: 0 1px 0 var(--lux-line), var(--shadow-1);
 }
 .lux-header--solid .lux-header__inner { padding-top: 10px; padding-bottom: 10px; }
 
-/* --- Reveal stagger mượt hơn (chỉ transform+opacity) */
-.lux-reveal { transition: opacity 0.7s var(--elev-ease), transform 0.7s var(--elev-ease); }
-
-/* --- Progress bar đọc trang (mảnh, ánh kim) */
+/* ============================================ MỤC 6.5 — Progress + scrollbar */
 .elev-progress {
   position: fixed;
   top: 0;
   left: 0;
-  height: 3px;
+  height: 2px;
   width: 100%;
   transform: scaleX(var(--elev-p, 0));
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, var(--lux-champagne), #efd9a6);
+  background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300));
   z-index: 60;
   pointer-events: none;
 }
+/* Scrollbar mảnh, thumb gold (Mục 6.5) */
+.lux { scrollbar-color: var(--color-gold-500) transparent; scrollbar-width: thin; }
+.lux ::-webkit-scrollbar { width: 8px; height: 8px; }
+.lux ::-webkit-scrollbar-track { background: transparent; }
+.lux ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-gold-500), var(--color-gold-700));
+  border-radius: 999px;
+}
 
-/* --- Nút về đầu trang (đặt GÓC TRÁI dưới để không đè nút chat/trợ lý ở phải) */
+/* --- Nút về đầu trang (GÓC TRÁI dưới để không đè nút chat ở phải) */
 .elev-top {
   position: fixed;
   left: clamp(16px, 4vw, 40px);
@@ -273,22 +342,22 @@
   height: 46px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 999px;
   border: 1px solid var(--lux-line-strong);
   background: var(--lux-ivory);
   color: var(--lux-ink);
-  box-shadow: var(--lux-shadow-md);
+  box-shadow: var(--shadow-2);
   cursor: pointer;
   opacity: 0;
   transform: translateY(12px) scale(0.9);
-  transition: opacity 0.35s var(--elev-ease), transform 0.35s var(--elev-ease), border-color 0.35s var(--elev-ease);
+  transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft), border-color var(--duration-base) var(--ease-soft);
   z-index: 55;
 }
 .elev-top.is-on { opacity: 1; transform: translateY(0) scale(1); }
 .elev-top:hover { border-color: var(--lux-champagne); transform: translateY(-2px) scale(1.04); }
 .elev-top:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
 
-/* --- Focus rõ ràng cho bàn phím (dùng token --ring của design system) */
+/* ------------------------------------- MỤC 8 — Focus bàn phím luôn nhìn thấy */
 .lux a:focus-visible,
 .lux button:focus-visible,
 .lux input:focus-visible,
@@ -300,14 +369,15 @@
 
 .lux-section__head .lux-eyebrow { margin-bottom: 2px; }
 
-/* --------------------------------------------------------- Reduce motion */
+/* ============================ MỤC 8 — prefers-reduced-motion: tắt ambient */
 @media (prefers-reduced-motion: reduce) {
   .cinema-eyebrow span:first-child::after,
   .lux-flag i,
   .lux-cta img,
+  .lux-cta::after,
   .lux-btn::before { animation: none !important; }
   .lux-btn:hover:not([disabled])::before { transform: translateX(-160%); }
   .elev-top,
   .lux-header,
-  .lux-reveal { transition: opacity 0.2s linear; }
+  .lux-reveal { transition: opacity 0.18s linear !important; }
 }
